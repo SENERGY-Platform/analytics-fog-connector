@@ -5,7 +5,7 @@ go 1.21.3
 //replace github.com/SENERGY-Platform/analytics-fog-lib => ../analytics-fog-lib
 
 require (
-	github.com/SENERGY-Platform/analytics-fog-lib v0.0.0-20231027143521-29194efcd4b8 // indirect
+	github.com/SENERGY-Platform/analytics-fog-lib v1.0.0 // indirect
 	github.com/SENERGY-Platform/go-service-base/util v0.14.0 // indirect
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
