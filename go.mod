@@ -2,7 +2,7 @@ module github.com/SENERGY-Platform/analytics-fog-connector
 
 go 1.21.3
 
-replace github.com/SENERGY-Platform/analytics-fog-lib => ../analytics-fog-lib
+//replace github.com/SENERGY-Platform/analytics-fog-lib => ../analytics-fog-lib
 
 require (
 	github.com/SENERGY-Platform/analytics-fog-lib v0.0.0-20231027143521-29194efcd4b8 // indirect
