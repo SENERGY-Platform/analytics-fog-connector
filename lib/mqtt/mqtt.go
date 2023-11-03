@@ -8,7 +8,6 @@ import (
 
 func NewMQTTClient(brokerConfig mqtt.BrokerConfig, userID string, logger *log_level.Logger) *mqtt.MQTTClient {
 	userControlTopic := control.GetConnectorControlTopic(userID)
-	logger.Debug(userControlTopic)
 	topics := mqtt.TopicConfig{
 		userControlTopic: byte(2),
 	}
