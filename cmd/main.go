@@ -70,7 +70,7 @@ func main() {
 	watchdog := watchdog.New(syscall.SIGINT, syscall.SIGTERM)
 
 	// TODO userID
-	userID := "test"
+	userID := "dd69ea0d-f553-4336-80f3-7f4567f85c7b"
 	mqttClient := mqtt.NewMQTTClient(config.Broker, userID, logging.Logger)
 
 	// TODO connector
