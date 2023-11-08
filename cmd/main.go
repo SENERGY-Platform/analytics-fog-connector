@@ -22,7 +22,8 @@ import (
 	"log"
 	"os"
 	"syscall"
-
+	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/auth"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
@@ -50,6 +51,8 @@ func main() {
 	config, err := config.NewConfig("")
 	if err != nil {
 		fmt.Println(err)
+		ec = 1
+		return
 	}
 
 	log.Println("Init Logger")
@@ -69,21 +72,32 @@ func main() {
 	watchdog.Logger = logging.Logger
 	watchdog := watchdog.New(syscall.SIGINT, syscall.SIGTERM)
 
-	// TODO userID
-	userID := "dd69ea0d-f553-4336-80f3-7f4567f85c7b"
-	mqttClient := mqtt.NewMQTTClient(config.Broker, userID, logging.Logger)
+	authClient := auth.NewAuthClient(config.KeyCloakURL, config.ClientID)
+	userID, err := authClient.GetUserID(config.Username, config.Password)
+	if err != nil {
+		logging.Logger.Error("Cant login user and get user id")
+		ec = 1
+		return
+	}
 
-	// TODO connector
-	connector := connector.NewConnector(mqttClient)
-
-	relayController := relay.NewRelayController(connector, userID)
-
-	mqttClient.ConnectMQTTBroker(relayController)
-
+	fogbrokerConfig := mqttLib.BrokerConfig(config.FogBroker)
+	fogMqttClient := mqtt.NewFogMQTTClient(fogbrokerConfig, logging.Logger)
 	watchdog.RegisterStopFunc(func() error {
-		mqttClient.CloseConnection()
+		fogMqttClient.CloseConnection()
 		return nil
 	})
+
+	PlatformBrokerConfig := mqttLib.BrokerConfig(config.PlatformBroker)
+	platformMqttClient := mqtt.NewPlatformMQTTClient(PlatformBrokerConfig, userID, logging.Logger)
+	watchdog.RegisterStopFunc(func() error {
+		platformMqttClient.CloseConnection()
+		return nil
+	})
+
+	connector := connector.NewConnector(fogMqttClient, platformMqttClient)
+	relayController := relay.NewRelayController(connector, userID)
+	fogMqttClient.ConnectMQTTBroker(relayController, nil, nil)
+	platformMqttClient.ConnectMQTTBroker(relayController, &config.Username, &config.Password)
 
 	watchdog.Start()
 

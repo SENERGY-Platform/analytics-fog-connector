@@ -21,6 +21,8 @@ import (
 
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/control"
+	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
+
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
@@ -39,7 +41,9 @@ func NewRelayController(connector *connector.Connector, userID string) *RelayCon
 func (relay *RelayController) ProcessMessage(message MQTT.Message) {
 	switch message.Topic() {
 	case control.GetConnectorControlTopic(relay.UserID):
-		relay.processUserControlCommand(message.Payload())
+		relay.processOperatorControlCommand(message.Payload())
+	case operator.OperatorsResultTopic:
+		relay.processOperatorOutputMessage(message.Payload())
 	}
 
 	// TODO Operator Output must be forwarded to platform

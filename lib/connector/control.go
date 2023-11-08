@@ -1,7 +1,7 @@
 package connector
 
-import "github.com/SENERGY-Platform/analytics-fog-lib/lib/control"
+import "github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
 
 func (controller *Connector) ForwardToMaster(message []byte) {
-	controller.MQTTClient.Publish(control.ControlTopic, string(message), 2)
+	controller.FogMQTTClient.Publish(operator.OperatorsControlTopic, string(message), 2)
 }

@@ -5,11 +5,13 @@ import (
 )
 
 type Connector struct {
-	MQTTClient *mqtt.MQTTClient
+	FogMQTTClient *mqtt.MQTTClient
+	PlatformMQTTClient *mqtt.MQTTClient
 }
 
-func NewConnector(mqttClient *mqtt.MQTTClient) *Connector {
+func NewConnector(fogMqttClient *mqtt.MQTTClient, platformMqttClient *mqtt.MQTTClient) *Connector {
 	return &Connector{
-		MQTTClient: mqttClient,
+		FogMQTTClient: fogMqttClient,
+		PlatformMQTTClient: platformMqttClient,
 	}
 }
