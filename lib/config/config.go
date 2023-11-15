@@ -15,6 +15,7 @@ type Config struct {
 	ClientID    string                `json:"client_id" env_var:"CLIENT_ID"`
 	Username    string                `json:"username" env_var:"AUTH_USERNAME"`
 	Password    string                `json:"password" env_var:"AUTH_PASSWORD"`
+	PublishResultsToPlatform bool 	`json:"publish_to_platform" env_var:"PUBLISH_RESULTS_TO_PLATFORM"`
 }
 
 func NewConfig(path string) (*Config, error) {

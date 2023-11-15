@@ -17,11 +17,12 @@
 package relay
 
 import (
-	"fmt"
-
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
+
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/control"
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
+	upstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
+	downstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/downstream"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
@@ -29,27 +30,35 @@ import (
 type RelayController struct {
 	Connector *connector.Connector
 	UserID    string
+	PublishResultsToPlatform bool
 }
 
-func NewRelayController(connector *connector.Connector, userID string) *RelayController {
+func NewRelayController(connector *connector.Connector, userID string, publishResultsToPlatform bool) *RelayController {
 	return &RelayController{
 		Connector: connector,
 		UserID:    userID,
+		PublishResultsToPlatform: publishResultsToPlatform,
 	}
 }
 
 func (relay *RelayController) ProcessMessage(message MQTT.Message) {
+	payload := message.Payload()
 	switch message.Topic() {
 	case control.GetConnectorControlTopic(relay.UserID):
-		relay.processOperatorControlCommand(message.Payload())
-	case operator.OperatorsResultTopic:
-		relay.processOperatorOutputMessage(message.Payload())
+		relay.processOperatorControlCommand(payload)
+	case upstreamLib.UpstreamProxyDisableTopic:
+		relay.processUpstreamDisable(payload)
+	case upstreamLib.UpstreamProxyEnableTopic:
+		relay.processUpstreamEnable(payload)
+	case downstreamLib.GetDownstreamTopic(relay.UserID):
+		relay.ForwardCloudMessageToFog(payload)
+	default:
+		// default are all operator topics that connector subscribed to
+		relay.processMessageToUpstream(payload, message.Topic())
 	}
-
-	// TODO Operator Output must be forwarded to platform
 }
 
 func (relay *RelayController) OnMessageReceived(client MQTT.Client, message MQTT.Message) {
-	fmt.Printf("Received message on topic: %s\nMessage: %s\n", message.Topic(), message.Payload())
+	logging.Logger.Debugf("Received message on topic: %s\nMessage: %s\n", message.Topic(), message.Payload())
 	go relay.ProcessMessage(message)
 }

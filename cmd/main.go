@@ -72,6 +72,7 @@ func main() {
 	watchdog.Logger = logging.Logger
 	watchdog := watchdog.New(syscall.SIGINT, syscall.SIGTERM)
 
+	logging.Logger.Info("Get User ID")
 	authClient := auth.NewAuthClient(config.KeyCloakURL, config.ClientID)
 	userID, err := authClient.GetUserID(config.Username, config.Password)
 	if err != nil {
@@ -80,6 +81,7 @@ func main() {
 		return
 	}
 
+	logging.Logger.Info("Setup Fog Broker connection")
 	fogbrokerConfig := mqttLib.BrokerConfig(config.FogBroker)
 	fogMqttClient := mqtt.NewFogMQTTClient(fogbrokerConfig, logging.Logger)
 	watchdog.RegisterStopFunc(func() error {
@@ -87,6 +89,7 @@ func main() {
 		return nil
 	})
 
+	logging.Logger.Info("Setup Platform Broker connection")
 	PlatformBrokerConfig := mqttLib.BrokerConfig(config.PlatformBroker)
 	platformMqttClient := mqtt.NewPlatformMQTTClient(PlatformBrokerConfig, userID, logging.Logger)
 	watchdog.RegisterStopFunc(func() error {
@@ -94,10 +97,15 @@ func main() {
 		return nil
 	})
 
-	connector := connector.NewConnector(fogMqttClient, platformMqttClient)
-	relayController := relay.NewRelayController(connector, userID)
-	fogMqttClient.ConnectMQTTBroker(relayController, nil, nil)
-	platformMqttClient.ConnectMQTTBroker(relayController, &config.Username, &config.Password)
+	logging.Logger.Info("Setup Connector, Upstream and Relay Controller")
+	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform)
+	relayController := relay.NewRelayController(connector, userID, config.PublishResultsToPlatform)
+	fogMqttClient.SetRelayController(relayController)
+	platformMqttClient.SetRelayController(relayController)
+
+	logging.Logger.Info("Connect to brokers")
+	fogMqttClient.ConnectMQTTBroker(nil, nil)
+	platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
 
 	watchdog.Start()
 
