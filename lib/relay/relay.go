@@ -17,12 +17,14 @@
 package relay
 
 import (
+	"strings"
+
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/control"
-	upstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
-	downstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/downstream"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
+	downstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/downstream"
+	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
+	upstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
@@ -43,19 +45,31 @@ func NewRelayController(connector *connector.Connector, userID string, publishRe
 
 func (relay *RelayController) ProcessMessage(message MQTT.Message) {
 	payload := message.Payload()
-	switch message.Topic() {
-	case control.GetConnectorControlTopic(relay.UserID):
-		relay.processOperatorControlCommand(payload)
-	case upstreamLib.UpstreamProxyDisableTopic:
+	topic := message.Topic() 
+
+	switch topic {
+	case operator.GetStartOperatorCloudTopic(relay.UserID):
+		relay.processStartOperatorCommand(payload)
+		return
+	case operator.GetStopOperatorCloudTopic(relay.UserID):
+		relay.processStopOperatorCommand(payload)
+		return
+	case upstreamLib.GetUpstreamDisableCloudTopic(relay.UserID):
 		relay.processUpstreamDisable(payload)
-	case upstreamLib.UpstreamProxyEnableTopic:
+		return 
+	case upstreamLib.GetUpstreamEnableCloudTopic(relay.UserID):
 		relay.processUpstreamEnable(payload)
-	case downstreamLib.GetDownstreamTopic(relay.UserID):
-		relay.ForwardCloudMessageToFog(payload)
-	default:
-		// default are all operator topics that connector subscribed to
-		relay.processMessageToUpstream(payload, message.Topic())
+		return 
 	}
+
+	if strings.HasPrefix(topic, downstreamLib.GetDownstreamOperatorCloudMatchTopic(relay.UserID)) {
+		// Prefix match
+		relay.processOperatorDownstreamMessage(payload, topic)
+		return
+	}
+
+	// default are all operator topics that connector subscribed to
+	relay.processMessageToUpstream(payload, message.Topic())
 }
 
 func (relay *RelayController) OnMessageReceived(client MQTT.Client, message MQTT.Message) {

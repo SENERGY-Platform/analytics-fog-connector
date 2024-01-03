@@ -5,6 +5,10 @@ import (
 
 )
 
-func (controller *Connector) ForwardToMaster(message []byte) error {
-	return controller.FogMQTTClient.Publish(operator.OperatorsControlTopic, string(message), 2)
+func (controller *Connector) ForwardStartOperatorToMaster(message []byte) error {
+	return controller.FogMQTTClient.Publish(operator.StartOperatorFogTopic, string(message), 2)
+}
+
+func (controller *Connector) ForwardStopOperatorToMaster(message []byte) error {
+	return controller.FogMQTTClient.Publish(operator.StopOperatorFogTopic, string(message), 2)
 }

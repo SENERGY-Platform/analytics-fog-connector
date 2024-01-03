@@ -107,6 +107,7 @@ func main() {
 	fogMqttClient.ConnectMQTTBroker(nil, nil)
 	platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
 
+	logging.Logger.Info("Connector is ready")
 	watchdog.Start()
 
 	ec = watchdog.Join()

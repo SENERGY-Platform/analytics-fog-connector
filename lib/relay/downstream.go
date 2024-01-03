@@ -1,17 +1,13 @@
 package relay 
 
 import (
-	downstreamLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/downstream"
-	"encoding/json"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-
 )
 
-func (relay *RelayController) processDownstreamMessage(message []byte) {
-	downStreamEnvelope := downstreamLib.DownstreamEnvelope{}
-	err := json.Unmarshal(message, &downStreamEnvelope)
+func (relay *RelayController) processOperatorDownstreamMessage(message []byte, topic string) {
+	downStreamMessage := string(message)
+	err := relay.Connector.ForwardCloudMessageToFog(downStreamMessage, topic)
 	if err != nil {
-		logging.Logger.Errorf("Cant unmarshal enable downstream message:", err)
+		logging.Logger.Errorf("Cant forward cloud message to fog: ", err.Error())
 	}
-	_ = relay.Connector.ForwardCloudMessageToFog(downStreamEnvelope)
 }

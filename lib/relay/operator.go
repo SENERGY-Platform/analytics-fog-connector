@@ -1,6 +1,9 @@
 package relay
 
-func (relay *RelayController) processOperatorControlCommand(message []byte) {
-	_ = relay.Connector.ForwardToMaster(message)
+func (relay *RelayController) processStartOperatorCommand(message []byte) {
+	_ = relay.Connector.ForwardStartOperatorToMaster(message)
 }
 
+func (relay *RelayController) processStopOperatorCommand(message []byte) {
+	_ = relay.Connector.ForwardStopOperatorToMaster(message)
+}

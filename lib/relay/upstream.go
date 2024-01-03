@@ -7,7 +7,7 @@ import (
 )
 
 func (relay *RelayController) processUpstreamDisable(message []byte) {
-	disableMessage := upstream.UpstreamDisableMessage{}
+	disableMessage := upstream.UpstreamControlMessage{}
 	err := json.Unmarshal(message, &disableMessage)
 	if err != nil {
 		logging.Logger.Errorf("Cant unmarshal disable upstream message:", err)
@@ -17,7 +17,7 @@ func (relay *RelayController) processUpstreamDisable(message []byte) {
 }
 
 func (relay *RelayController) processUpstreamEnable(message []byte) {
-	enableMessage := upstream.UpstreamEnableMessage{}
+	enableMessage := upstream.UpstreamControlMessage{}
 	err := json.Unmarshal(message, &enableMessage)
 	if err != nil {
 		logging.Logger.Errorf("Cant unmarshal enable upstream message:", err)

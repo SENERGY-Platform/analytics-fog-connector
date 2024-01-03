@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/control"
+	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
 
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
@@ -21,14 +21,15 @@ func NewMQTTClient(brokerConfig mqtt.BrokerConfig, logger *log_level.Logger, top
 func NewPlatformMQTTClient(brokerConfig mqtt.BrokerConfig, userID string, logger *log_level.Logger) *mqtt.MQTTClient {
 	topicConfig := mqtt.TopicConfig{
 		// Start/Stop operator commands
-		control.GetConnectorControlTopic(userID): byte(2),
-		
-		// Cloud operator/device output that are need in fog  
-		downstream.GetDownstreamTopic(userID): byte(2),
+		operator.GetStartOperatorCloudTopic(userID): byte(2),
+		operator.GetStopOperatorCloudTopic(userID): byte(2),
+
+		// Cloud operator output that are need in fog  
+		downstream.GetDownstreamOperatorCloudSubTopic(userID): byte(2),
 
 		// Commands to enable and disbale forwarding of specific fog operators that are needed in cloud
-		upstream.GetUpstreamProxyEnableTopic(userID): byte(2),
-		upstream.GetUpstreamProxyDisableTopic(userID): byte(2),
+		upstream.GetUpstreamEnableCloudTopic(userID): byte(2),
+		upstream.GetUpstreamDisableCloudTopic(userID): byte(2),
 	}
 
 	return NewMQTTClient(brokerConfig, logger, topicConfig)
