@@ -97,9 +97,10 @@ func main() {
 		return nil
 	})
 
-	logging.Logger.Info("Setup Connector, Upstream and Relay Controller")
-	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform)
+	logging.Logger.Info("Setup Connector, Upstream, Sync and Relay Controller")
+	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform, userID)
 	relayController := relay.NewRelayController(connector, userID, config.PublishResultsToPlatform)
+
 	fogMqttClient.SetRelayController(relayController)
 	platformMqttClient.SetRelayController(relayController)
 

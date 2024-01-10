@@ -8,12 +8,14 @@ type Connector struct {
 	FogMQTTClient *mqtt.MQTTClient
 	PlatformMQTTClient *mqtt.MQTTClient
 	PublishResultsToPlatform bool
+	UserID string
 }
 
-func NewConnector(fogMqttClient *mqtt.MQTTClient, platformMqttClient *mqtt.MQTTClient, publishResultsToPlatform bool) *Connector {
+func NewConnector(fogMqttClient *mqtt.MQTTClient, platformMqttClient *mqtt.MQTTClient, publishResultsToPlatform bool, userID string) *Connector {
 	return &Connector{
 		FogMQTTClient: fogMqttClient,
 		PlatformMQTTClient: platformMqttClient,
 		PublishResultsToPlatform: publishResultsToPlatform,
+		UserID: userID,
 	}
 }

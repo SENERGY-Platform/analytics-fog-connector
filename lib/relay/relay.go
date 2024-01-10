@@ -48,18 +48,27 @@ func (relay *RelayController) ProcessMessage(message MQTT.Message) {
 	topic := message.Topic() 
 
 	switch topic {
+	// Operator Control 
 	case operator.GetStartOperatorCloudTopic(relay.UserID):
 		relay.processStartOperatorCommand(payload)
 		return
 	case operator.GetStopOperatorCloudTopic(relay.UserID):
 		relay.processStopOperatorCommand(payload)
 		return
+	case operator.GetOperatorControlSyncResponseTopic(relay.UserID):
+		relay.processOperatorSync(payload)
+		return
+
+	// Upstream Forward Control
 	case upstreamLib.GetUpstreamDisableCloudTopic(relay.UserID):
 		relay.processUpstreamDisable(payload)
 		return 
 	case upstreamLib.GetUpstreamEnableCloudTopic(relay.UserID):
 		relay.processUpstreamEnable(payload)
 		return 
+	case upstreamLib.GetUpstreamControlSyncResponseTopic(relay.UserID):
+		relay.processUpstreamSync(payload)
+		return
 	}
 
 	if strings.HasPrefix(topic, downstreamLib.GetDownstreamOperatorCloudMatchTopic(relay.UserID)) {

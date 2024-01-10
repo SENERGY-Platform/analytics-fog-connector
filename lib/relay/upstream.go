@@ -28,3 +28,12 @@ func (relay *RelayController) processUpstreamEnable(message []byte) {
 func (relay *RelayController) processMessageToUpstream(message []byte, topic string) {
 	_ = relay.Connector.ForwardOperatorResult(message, topic)
 }
+
+func (relay *RelayController) processUpstreamSync(message []byte) {
+	syncMessage := upstream.UpstreamSyncMessage{}
+	err := json.Unmarshal(message, &syncMessage)
+	if err != nil {
+		logging.Logger.Errorf("Cant unmarshal upstream sync message:", err)
+	}
+	_ = relay.Connector.SyncUpstreamForward(syncMessage)
+}

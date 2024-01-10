@@ -57,3 +57,17 @@ func (connector *Connector) DisableForwarding(disableMessage upstream.UpstreamCo
 	logging.Logger.Infof("Successfully unsubscribed from %s", topic)
 	return nil
 }
+
+func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyncMessage) error {
+	for _, topic := range(syncMessage.OperatorOutputTopics) {
+		err := connector.EnableForwarding(upstream.UpstreamControlMessage{
+			OperatorOutputTopic: topic,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+

@@ -1,2 +1,2 @@
 # TODO
-Rename to upstream proxy 
+- Sync should also happen in interval because it can happen that flow engine is not connected during sycn request e.g. broker down or that fog connector cant publish to fog broker, e.g fog broker is down, when the sycn response arrives
