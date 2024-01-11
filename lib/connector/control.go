@@ -14,14 +14,6 @@ func (connector *Connector) ForwardStopOperatorToMaster(message []byte) error {
 	return connector.FogMQTTClient.Publish(operator.StopOperatorFogTopic, string(message), 2)
 }
 
-func (connector *Connector) SyncOperatorStates(syncMsg []operator.StartOperatorControlCommand) error {
-	for _, operatorStartCmd := range(syncMsg) {
-		message, err := json.Marshal(operatorStartCmd)
-		if err != nil {
-			logging.Logger.Errorf("Cant marshal sync operator start message: " + err.Error())
-			return err
-		}
-		connector.ForwardStartOperatorToMaster(message)
-	}
-	return nil
+func (connector *Connector) SyncOperatorStates(message []byte) error {
+	return connector.FogMQTTClient.Publish(operator.OperatorControlSyncResponseFogTopic, string(message), 2)
 }

@@ -58,6 +58,7 @@ func (connector *Connector) DisableForwarding(disableMessage upstream.UpstreamCo
 	return nil
 }
 
+// TODO unsubscribe 
 func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyncMessage) error {
 	for _, topic := range(syncMessage.OperatorOutputTopics) {
 		err := connector.EnableForwarding(upstream.UpstreamControlMessage{

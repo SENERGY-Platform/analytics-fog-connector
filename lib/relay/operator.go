@@ -16,10 +16,5 @@ func (relay *RelayController) processStopOperatorCommand(message []byte) {
 }
 
 func (relay *RelayController) processOperatorSync(message []byte) {
-	syncMessage := []operator.StartOperatorControlCommand{}
-	err := json.Unmarshal(message, &syncMessage)
-	if err != nil {
-		logging.Logger.Errorf("Cant unmarshal upstream sync message:", err)
-	}
-	_ = relay.Connector.SyncOperatorStates(syncMessage)
+	_ = relay.Connector.SyncOperatorStates(message)
 }
