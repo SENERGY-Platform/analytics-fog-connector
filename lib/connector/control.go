@@ -2,8 +2,6 @@ package connector
 
 import (
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
-	"encoding/json"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
 )
 
 func (connector *Connector) ForwardStartOperatorToMaster(message []byte) error {

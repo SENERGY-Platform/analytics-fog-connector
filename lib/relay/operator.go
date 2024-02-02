@@ -1,9 +1,6 @@
 package relay
 
 import (
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-	"encoding/json"
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
 
 )
 
