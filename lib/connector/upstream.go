@@ -11,11 +11,14 @@ import (
 
 func (connector *Connector) ForwardOperatorResult(payload []byte, fogTopic string) error {
 	baseOperatorName := GetOperatorNameFromTopic(fogTopic)
-	message := string(payload)
 	cloudOperatorTopic, _ := operator.GenerateOperatorOutputTopic(baseOperatorName, "", "", location.Cloud)
 	platformTopic := upstream.CloudUpstreamTopic + "/" + cloudOperatorTopic
-	logging.Logger.Debugf("Try to publish upstream message: %s to platform topic: %s", message, platformTopic)
-	err := connector.PlatformMQTTClient.Publish(platformTopic, message, 2)
+	logging.Logger.Debugf("Try to publish upstream message: %s to platform topic: %s", string(payload), platformTopic)
+	message := Message{
+		topic: platformTopic,
+		payload: payload,
+	}
+	err := connector.CloudMessageRelayHandler.Put(message)
 	if err != nil {
 		logging.Logger.Errorf("Cant publish upstream message to platform broker ")
 		return err

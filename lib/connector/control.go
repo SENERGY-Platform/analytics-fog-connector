@@ -2,16 +2,29 @@ package connector
 
 import (
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
+
 )
 
-func (connector *Connector) ForwardStartOperatorToMaster(message []byte) error {
-	return connector.FogMQTTClient.Publish(operator.StartOperatorFogTopic, string(message), 2)
+func (connector *Connector) ForwardStartOperatorToMaster(payload []byte) error {
+	message := Message{
+		topic: operator.StartOperatorFogTopic,
+		payload: payload,
+	}
+	return connector.LocalMessageRelayHandler.Put(message)
 }
 
-func (connector *Connector) ForwardStopOperatorToMaster(message []byte) error {
-	return connector.FogMQTTClient.Publish(operator.StopOperatorFogTopic, string(message), 2)
+func (connector *Connector) ForwardStopOperatorToMaster(payload []byte) error {
+	message := Message{
+		topic: operator.StopOperatorFogTopic,
+		payload: payload,
+	}
+	return connector.LocalMessageRelayHandler.Put(message)
 }
 
-func (connector *Connector) SyncOperatorStates(message []byte) error {
-	return connector.FogMQTTClient.Publish(operator.OperatorControlSyncResponseFogTopic, string(message), 2)
+func (connector *Connector) SyncOperatorStates(payload []byte) error {
+	message := Message{
+		topic: operator.OperatorControlSyncResponseFogTopic,
+		payload: payload,
+	}
+	return connector.LocalMessageRelayHandler.Put(message)
 }

@@ -1,21 +1,27 @@
 package connector
 
 import (
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/mqtt"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib"
 )
 
 type Connector struct {
-	FogMQTTClient *mqtt.MQTTClient
-	PlatformMQTTClient *mqtt.MQTTClient
+	FogMQTTClient mqtt.MQTTClient
+	PlatformMQTTClient mqtt.MQTTClient
 	PublishResultsToPlatform bool
 	UserID string
+	LocalMessageRelayHandler lib.MessageRelayHandler
+	CloudMessageRelayHandler lib.MessageRelayHandler
+
 }
 
-func NewConnector(fogMqttClient *mqtt.MQTTClient, platformMqttClient *mqtt.MQTTClient, publishResultsToPlatform bool, userID string) *Connector {
+func NewConnector(fogMqttClient mqtt.MQTTClient, platformMqttClient mqtt.MQTTClient, publishResultsToPlatform bool, userID string, LocalMessageRelayHandler lib.MessageRelayHandler, CloudMessageRelayHandler lib.MessageRelayHandler) *Connector {
 	return &Connector{
 		FogMQTTClient: fogMqttClient,
 		PlatformMQTTClient: platformMqttClient,
 		PublishResultsToPlatform: publishResultsToPlatform,
 		UserID: userID,
+		LocalMessageRelayHandler: LocalMessageRelayHandler,
+		CloudMessageRelayHandler: CloudMessageRelayHandler,
 	}
 }

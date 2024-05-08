@@ -8,19 +8,19 @@ import (
 
 )
 
-type AuthClient struct {
+type KeycloakAuthClient struct {
 	Client   *gocloak.GoCloak
 	ClientID string
 }
 
-func NewAuthClient(keycloakURL string, clientID string) *AuthClient {
-	return &AuthClient{
+func NewAuthClient(keycloakURL string, clientID string) *KeycloakAuthClient {
+	return &KeycloakAuthClient{
 		Client:   gocloak.NewClient(keycloakURL),
 		ClientID: clientID,
 	}
 }
 
-func (client *AuthClient) GetUserID(username string, password string) (string, error) {
+func (client *KeycloakAuthClient) GetUserID(username string, password string) (string, error) {
 	ctx := context.Background()
 	token, err := client.Client.Login(ctx, client.ClientID, "", "master", username, password)
 	if err != nil {

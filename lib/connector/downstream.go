@@ -8,8 +8,8 @@ import (
 )
 
 
-func (connector *Connector) ForwardCloudMessageToFog(downstreamMessage string, topic string) error {
-	logging.Logger.Debugf("Received cloud message to be forwarded to fog broker at topic: ", topic)
+func (connector *Connector) ForwardCloudMessageToFog(payload string, topic string) error {
+	logging.Logger.Debug("Received cloud message to be forwarded to fog broker at topic: ", topic)
 	baseOperatorName, operatorID, pipelineID := GetOperatorIDsFromTopic(topic)
 	fogTopic, err := operator.GenerateOperatorOutputTopic(baseOperatorName, "", operatorID, deployLocationLib.Local)
 	if err != nil {
@@ -19,8 +19,13 @@ func (connector *Connector) ForwardCloudMessageToFog(downstreamMessage string, t
 	fogTopic = fogTopic + "/" + pipelineID
 	// pipeline ID check 
 
-	logging.Logger.Debugf("Try to publish downstream message: %s to fog topic: %s", downstreamMessage, fogTopic)
-	err = connector.FogMQTTClient.Publish(fogTopic, downstreamMessage, 2)
+	message := Message{
+		topic: fogTopic,
+		payload: []byte(payload),
+	}
+
+	logging.Logger.Debugf("Try to publish downstream message: %s to fog topic: %s", payload, fogTopic)
+	err = connector.LocalMessageRelayHandler.Put(message)
 	return err 
 }
 

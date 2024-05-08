@@ -23,15 +23,15 @@ import (
 	"os"
 	"syscall"
 	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/auth"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/send_relay"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/mqtt"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/mqtt"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/relay"
 	srv_base "github.com/SENERGY-Platform/go-service-base/util"
 	"github.com/SENERGY-Platform/go-service-base/watchdog"
-
 	"github.com/joho/godotenv"
 )
 
@@ -97,8 +97,18 @@ func main() {
 		return nil
 	})
 
+	localMqttClientPubF := func(topic string, data []byte) error {
+		return fogMqttClient.Publish(topic, string(data), 1)
+	}
+	localMessageRelayHandler := send_relay.New(10000, localMqttClientPubF)
+
+	cloudMqttClientPubF := func(topic string, data []byte) error {
+		return platformMqttClient.Publish(topic, string(data), 1)
+	}
+	cloudMessageRelayHandler := send_relay.New(10000, cloudMqttClientPubF)
+
 	logging.Logger.Info("Setup Connector, Upstream, Sync and Relay Controller")
-	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform, userID)
+	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform, userID, localMessageRelayHandler, cloudMessageRelayHandler)
 	relayController := relay.NewRelayController(connector, userID, config.PublishResultsToPlatform)
 
 	fogMqttClient.SetRelayController(relayController)

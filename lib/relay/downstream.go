@@ -5,6 +5,7 @@ import (
 )
 
 func (relay *RelayController) processOperatorDownstreamMessage(message []byte, topic string) {
+	logging.Logger.Debugf("Received operator downstream command: %s", string(message))
 	downStreamMessage := string(message)
 	err := relay.Connector.ForwardCloudMessageToFog(downStreamMessage, topic)
 	if err != nil {

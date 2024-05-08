@@ -7,6 +7,8 @@ import (
 )
 
 func (relay *RelayController) processUpstreamDisable(message []byte) {
+	logging.Logger.Debugf("Received upstream disable command: %s", string(message))
+
 	disableMessage := upstream.UpstreamControlMessage{}
 	err := json.Unmarshal(message, &disableMessage)
 	if err != nil {
@@ -17,6 +19,8 @@ func (relay *RelayController) processUpstreamDisable(message []byte) {
 }
 
 func (relay *RelayController) processUpstreamEnable(message []byte) {
+	logging.Logger.Debugf("Received upstream enable command: %s", string(message))
+
 	enableMessage := upstream.UpstreamControlMessage{}
 	err := json.Unmarshal(message, &enableMessage)
 	if err != nil {
@@ -26,10 +30,13 @@ func (relay *RelayController) processUpstreamEnable(message []byte) {
 }
 
 func (relay *RelayController) processMessageToUpstream(message []byte, topic string) {
+	logging.Logger.Debugf("Received upstream message: %s", string(message))
 	_ = relay.Connector.ForwardOperatorResult(message, topic)
 }
 
 func (relay *RelayController) processUpstreamSync(message []byte) {
+	logging.Logger.Debugf("Received upstream sync response: %s", string(message))
+
 	syncMessage := upstream.UpstreamSyncMessage{}
 	err := json.Unmarshal(message, &syncMessage)
 	if err != nil {
