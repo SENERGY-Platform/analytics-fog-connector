@@ -7,40 +7,40 @@ import (
 )
 
 func (relay *RelayController) processUpstreamDisable(message []byte) {
-	logging.Logger.Debugf("Received upstream disable command: %s", string(message))
+	logging.Logger.Debug("Received upstream disable command: " + string(message))
 
 	disableMessage := upstream.UpstreamControlMessage{}
 	err := json.Unmarshal(message, &disableMessage)
 	if err != nil {
-		logging.Logger.Errorf("Cant unmarshal disable upstream message:", err)
+		logging.Logger.Error("Cant unmarshal disable upstream message: " + err.Error())
 	}
 
 	_ = relay.Connector.DisableForwarding(disableMessage)
 }
 
 func (relay *RelayController) processUpstreamEnable(message []byte) {
-	logging.Logger.Debugf("Received upstream enable command: %s", string(message))
+	logging.Logger.Debug("Received upstream enable command: " + string(message))
 
 	enableMessage := upstream.UpstreamControlMessage{}
 	err := json.Unmarshal(message, &enableMessage)
 	if err != nil {
-		logging.Logger.Errorf("Cant unmarshal enable upstream message:", err)
+		logging.Logger.Error("Cant unmarshal enable upstream message: " + err.Error())
 	}
 	_ = relay.Connector.EnableForwarding(enableMessage)
 }
 
 func (relay *RelayController) processMessageToUpstream(message []byte, topic string) {
-	logging.Logger.Debugf("Received upstream message: %s", string(message))
+	logging.Logger.Debug("Received upstream message: " + string(message))
 	_ = relay.Connector.ForwardOperatorResult(message, topic)
 }
 
 func (relay *RelayController) processUpstreamSync(message []byte) {
-	logging.Logger.Debugf("Received upstream sync response: %s", string(message))
+	logging.Logger.Debug("Received upstream sync response: " + string(message))
 
 	syncMessage := upstream.UpstreamSyncMessage{}
 	err := json.Unmarshal(message, &syncMessage)
 	if err != nil {
-		logging.Logger.Errorf("Cant unmarshal upstream sync message:", err)
+		logging.Logger.Error("Cant unmarshal upstream sync message: " + err.Error())
 	}
 	_ = relay.Connector.SyncUpstreamForward(syncMessage)
 }

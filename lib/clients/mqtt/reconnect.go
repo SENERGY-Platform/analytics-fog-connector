@@ -26,20 +26,20 @@ func (handler ReconnectHandler) Publish(client MQTT.Client, topic string) error 
 
 	token := client.Publish(topic, byte(2), false, "{}")
 	if token.Wait() && token.Error() != nil {
-		logging.Logger.Errorf("Error on Publish: ", token.Error())
+		logging.Logger.Error("Error on Publish: " +  token.Error().Error())
 		return token.Error()
 	}
-	logging.Logger.Debugf("Publish was successful")
+	logging.Logger.Debug("Publish was successful")
 	return nil
 }
 
 func (handler ReconnectHandler) RequestOperatorStatesSync(client MQTT.Client) error {
-	logging.Logger.Debugf("Request operator sync")
+	logging.Logger.Debug("Request operator sync")
 	return handler.Publish(client, operator.GetOperatorControlSyncTriggerPubTopic(handler.UserID))
 }
 
 func (handler ReconnectHandler) RequestUpstreamForwardSync(client MQTT.Client) error {
-	logging.Logger.Debugf("Request upstream forward sync")
+	logging.Logger.Debug("Request upstream forward sync")
 	return handler.Publish(client, upstream.GetUpstreamControlSyncTriggerPubTopic(handler.UserID))
 }
 

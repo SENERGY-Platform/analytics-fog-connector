@@ -1,16 +1,20 @@
 package logging
 
 import (
-	"os"
-
-	log_level "github.com/y-du/go-log-level"
-
-	srv_base "github.com/SENERGY-Platform/go-service-base/util"
+	"io"
+	"log/slog"
 )
 
-var Logger *log_level.Logger
 
-func InitLogger(config srv_base.LoggerConfig) (out *os.File, err error) {
-	Logger, out, err = srv_base.NewLogger(config)
+var Logger *slog.Logger
+
+func InitLogger(outputWriter io.Writer,debug bool) (err error) {
+	logLevel := slog.LevelInfo
+	if debug {
+		logLevel = slog.LevelDebug
+	}
+	Logger = slog.New(slog.NewJSONHandler(outputWriter, &slog.HandlerOptions{Level: logLevel}))
+	slog.SetDefault(Logger)
 	return
 }
+

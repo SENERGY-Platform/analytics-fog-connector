@@ -1,0 +1,78 @@
+{"time":"2024-05-15T16:32:35.962076037+02:00","level":"INFO","msg":"Setup Connector, Upstream, Sync and Relay Controller"}
+
+{"time":"2024-05-15T16:32:35.963448493+02:00","level":"DEBUG","msg":"Connected to: tcp://localhost:49176"}
+
+{"time":"2024-05-15T16:32:35.9644565+02:00","level":"DEBUG","msg":"Connected to: tcp://localhost:49175"}
+
+{"time":"2024-05-15T16:32:35.965046559+02:00","level":"DEBUG","msg":"Subscribed to topics: %v","!BADKEY":{"fog/analytics/user/downstream/operator/#":2,"fog/analytics/user/operator/control/start":2,"fog/analytics/user/operator/control/stop":2,"fog/analytics/user/operator/control/sync/response":2,"fog/analytics/user/upstream/disable":2,"fog/analytics/user/upstream/enable":2,"fog/analytics/user/upstream/sync/response":2}}
+
+{"time":"2024-05-15T16:32:36.006216331+02:00","level":"DEBUG","msg":"Received message on topic: fog/analytics/user/downstream/operator/operator/op1/pipeline\nMessage: test"}
+
+{"time":"2024-05-15T16:32:36.006376619+02:00","level":"DEBUG","msg":"Received operator downstream command: test"}
+
+{"time":"2024-05-15T16:32:36.007782779+02:00","level":"DEBUG","msg":"Publish was successful"}
+
+{"time":"2024-05-15T16:32:46.70340695+02:00","level":"INFO","msg":"Get User ID"}
+
+{"time":"2024-05-15T16:32:46.704518821+02:00","level":"INFO","msg":"Setup Connector, Upstream, Sync and Relay Controller"}
+
+{"time":"2024-05-15T16:32:46.704960279+02:00","level":"DEBUG","msg":"Attempt to connect to tcp://localhost:49179"}
+
+{"time":"2024-05-15T16:32:46.706358239+02:00","level":"DEBUG","msg":"Connected to: tcp://localhost:49179"}
+
+{"time":"2024-05-15T16:32:46.707566807+02:00","level":"DEBUG","msg":"Connected to: tcp://localhost:49178"}
+
+{"time":"2024-05-15T16:32:46.707995445+02:00","level":"DEBUG","msg":"Subscribed to topics: %v","!BADKEY":{"fog/analytics/user/downstream/operator/#":2,"fog/analytics/user/operator/control/start":2,"fog/analytics/user/operator/control/stop":2,"fog/analytics/user/operator/control/sync/response":2,"fog/analytics/user/upstream/disable":2,"fog/analytics/user/upstream/enable":2,"fog/analytics/user/upstream/sync/response":2}}
+
+{"time":"2024-05-15T16:32:46.754418759+02:00","level":"DEBUG","msg":"Received message on topic: fog/analytics/user/operator/control/sync/response\nMessage: test"}
+
+{"time":"2024-05-15T16:32:46.755449505+02:00","level":"DEBUG","msg":"Publish was successful"}
+
+{"time":"2024-05-15T16:32:46.757178359+02:00","level":"DEBUG","msg":"Publish was successful"}
+
+{"time":"2024-05-15T16:37:22.932187548+02:00","level":"INFO","msg":"Get User ID"}
+
+{"time":"2024-05-15T16:37:22.932564577+02:00","level":"INFO","msg":"Setup Connector, Upstream, Sync and Relay Controller"}
+
+{"time":"2024-05-15T16:37:22.934476387+02:00","level":"DEBUG","msg":"Connected to: tcp://localhost:49182"}
+
+{"time":"2024-05-15T16:37:22.935568269+02:00","level":"DEBUG","msg":"Connected to server: tcp://localhost:49181"}
+
+{"time":"2024-05-15T16:37:22.935608996+02:00","level":"DEBUG","msg":"Try to initially subscribe to topics: %v","!BADKEY":{"fog/analytics/user/downstream/operator/#":2,"fog/analytics/user/operator/control/start":2,"fog/analytics/user/operator/control/stop":2,"fog/analytics/user/operator/control/sync/response":2,"fog/analytics/user/upstream/disable":2,"fog/analytics/user/upstream/enable":2,"fog/analytics/user/upstream/sync/response":2}}
+
+{"time":"2024-05-15T16:37:22.936135689+02:00","level":"DEBUG","msg":"Subscribed to topics: %v","!BADKEY":{"fog/analytics/user/downstream/operator/#":2,"fog/analytics/user/operator/control/start":2,"fog/analytics/user/operator/control/stop":2,"fog/analytics/user/operator/control/sync/response":2,"fog/analytics/user/upstream/disable":2,"fog/analytics/user/upstream/enable":2,"fog/analytics/user/upstream/sync/response":2}}
+
+{"time":"2024-05-15T16:37:22.978416027+02:00","level":"DEBUG","msg":"Received message on topic: fog/analytics/user/upstream/enable\nMessage: {\"topic\":\"foo/bar/op/op1/pipe\"}"}
+
+{"time":"2024-05-15T16:37:22.978642393+02:00","level":"DEBUG","msg":"Received upstream enable command: {\"topic\":\"foo/bar/op/op1/pipe\"}"}
+
+{"time":"2024-05-15T16:37:22.979824359+02:00","level":"INFO","msg":"Successfully subscribed to: foo/bar/op/op1/pipe"}
+
+{"time":"2024-05-15T16:37:22.980345667+02:00","level":"DEBUG","msg":"Publish was successful"}
+
+{"time":"2024-05-15T16:37:22.983063907+02:00","level":"DEBUG","msg":"Received message on topic: foo/bar/op/op1/pipe\nMessage: Test"}
+
+{"time":"2024-05-15T16:37:22.983147229+02:00","level":"DEBUG","msg":"Try to send in order to topic: fog/analytics/upstream/messages/analytics-op - Msg: Test"}
+
+{"time":"2024-05-15T16:37:53.103529774+02:00","level":"INFO","msg":"Setup Connector, Upstream, Sync and Relay Controller"}
+
+{"time":"2024-05-15T16:37:53.105145087+02:00","level":"DEBUG","msg":"Connected to server: tcp://localhost:49185"}
+
+{"time":"2024-05-15T16:37:53.1052232+02:00","level":"DEBUG","msg":"Try to connect to: tcp://localhost:49184 [0/240]"}
+
+{"time":"2024-05-15T16:37:53.106402158+02:00","level":"DEBUG","msg":"Connected to server: tcp://localhost:49184"}
+
+{"time":"2024-05-15T16:37:53.106429962+02:00","level":"DEBUG","msg":"Try to initially subscribe to topics: %v","!BADKEY":{"fog/analytics/user/downstream/operator/#":2,"fog/analytics/user/operator/control/start":2,"fog/analytics/user/operator/control/stop":2,"fog/analytics/user/operator/control/sync/response":2,"fog/analytics/user/upstream/disable":2,"fog/analytics/user/upstream/enable":2,"fog/analytics/user/upstream/sync/response":2}}
+
+{"time":"2024-05-15T16:37:53.106937178+02:00","level":"DEBUG","msg":"Subscribed to topics: %v","!BADKEY":{"fog/analytics/user/downstream/operator/#":2,"fog/analytics/user/operator/control/start":2,"fog/analytics/user/operator/control/stop":2,"fog/analytics/user/operator/control/sync/response":2,"fog/analytics/user/upstream/disable":2,"fog/analytics/user/upstream/enable":2,"fog/analytics/user/upstream/sync/response":2}}
+
+{"time":"2024-05-15T16:37:53.150472124+02:00","level":"DEBUG","msg":"Received message on topic: fog/analytics/user/upstream/enable\nMessage: {\"topic\":\"foo/bar/op/\"}"}
+
+{"time":"2024-05-15T16:37:53.150704915+02:00","level":"DEBUG","msg":"Received upstream enable command: {\"topic\":\"foo/bar/op/\"}"}
+
+{"time":"2024-05-15T16:37:53.153337284+02:00","level":"INFO","msg":"Successfully subscribed to: foo/bar/op/"}
+
+{"time":"2024-05-15T16:37:53.156801221+02:00","level":"DEBUG","msg":"Received message on topic: foo/bar/op/\nMessage: Test"}
+
+{"time":"2024-05-15T16:37:53.156958756+02:00","level":"DEBUG","msg":"Received upstream message: Test"}
+

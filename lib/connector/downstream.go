@@ -1,15 +1,17 @@
 package connector
 
 import (
-	operator "github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
-	deployLocationLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/location"
+	"fmt"
 	"strings"
+
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
+	deployLocationLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/location"
+	operator "github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
 )
 
 
 func (connector *Connector) ForwardCloudMessageToFog(payload string, topic string) error {
-	logging.Logger.Debug("Received cloud message to be forwarded to fog broker at topic: ", topic)
+	logging.Logger.Debug("Received cloud message to be forwarded to fog broker at topic: " + topic)
 	baseOperatorName, operatorID, pipelineID := GetOperatorIDsFromTopic(topic)
 	fogTopic, err := operator.GenerateOperatorOutputTopic(baseOperatorName, "", operatorID, deployLocationLib.Local)
 	if err != nil {
@@ -24,7 +26,7 @@ func (connector *Connector) ForwardCloudMessageToFog(payload string, topic strin
 		payload: []byte(payload),
 	}
 
-	logging.Logger.Debugf("Try to publish downstream message: %s to fog topic: %s", payload, fogTopic)
+	logging.Logger.Debug(fmt.Sprintf("Try to publish downstream message: %s to fog topic: %s", payload, fogTopic))
 	err = connector.LocalMessageRelayHandler.Put(message)
 	return err 
 }

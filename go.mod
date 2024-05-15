@@ -6,7 +6,7 @@ go 1.21.3
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.8.0
-	github.com/SENERGY-Platform/analytics-fog-lib v1.1.4
+	github.com/SENERGY-Platform/analytics-fog-lib v1.1.11
 	github.com/SENERGY-Platform/go-service-base/util v0.14.0
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3
@@ -38,7 +38,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/hahahannes/e2e-go-utils v0.0.1 // indirect
+	github.com/hahahannes/e2e-go-utils v1.1.12 // indirect
 	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

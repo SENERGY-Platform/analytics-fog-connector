@@ -35,7 +35,7 @@ func NewMosquitto(ctx context.Context) (*Mosquitto, error) {
 					Reader:            r,
 					HostFilePath:      "./tests/dependencies/conf.conf", // will be discarded internally
 					ContainerFilePath: "/mosquitto/config/mosquitto.conf",
-					FileMode:          0o700,
+					FileMode:          0o777,
 				},
 			},
 		},

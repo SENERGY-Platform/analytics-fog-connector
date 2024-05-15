@@ -82,6 +82,6 @@ func (relay *RelayController) ProcessMessage(message MQTT.Message) {
 }
 
 func (relay *RelayController) OnMessageReceived(client MQTT.Client, message MQTT.Message) {
-	logging.Logger.Debugf("Received message on topic: %s\nMessage: %s\n", message.Topic(), message.Payload())
+	logging.Logger.Debug("Received message on topic: " + message.Topic() + "\nMessage: " + string(message.Payload()))
 	go relay.ProcessMessage(message)
 }

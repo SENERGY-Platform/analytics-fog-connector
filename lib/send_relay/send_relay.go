@@ -1,16 +1,17 @@
-package send_relay 
+package send_relay
 
 import (
 	"errors"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
 	"sync"
+	"fmt"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/itf"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
 )
 
 const logPrefix = "[send-relay]"
 
 type SendRelayHandler struct {
-	messages   chan lib.Message
+	messages   chan itf.Message
 	sendFunc   func(topic string, data []byte) error
 	dChan      chan struct{}
 	mu         sync.RWMutex
@@ -18,13 +19,13 @@ type SendRelayHandler struct {
 
 func New(buffer int, sendFunc func(topic string, data []byte) error) *SendRelayHandler {
 	return &SendRelayHandler{
-		messages:   make(chan lib.Message, buffer),
+		messages:   make(chan itf.Message, buffer),
 		sendFunc:   sendFunc,
 		dChan:      make(chan struct{}),
 	}
 }
 
-func (h *SendRelayHandler) Put(m lib.Message) error {
+func (h *SendRelayHandler) Put(m itf.Message) error {
 	select {
 	case h.messages <- m:
 	default:
@@ -44,9 +45,11 @@ func (h *SendRelayHandler) Stop() {
 
 func (h *SendRelayHandler) run() {
 	for message := range h.messages {
-		topic := message.Payload()
-		if err := h.sendFunc(message.Topic(), topic); err != nil {
-			logging.Logger.Errorf("%s publish on topic (%s): %s", logPrefix, topic, err)
+		topic := message.Topic()
+		payload := message.Payload()
+		logging.Logger.Debug("Try to send in order to topic: " + topic + " - Msg: " + string(payload))
+		if err := h.sendFunc(topic, payload); err != nil {
+			logging.Logger.Error(fmt.Sprintf("%s publish on topic (%s): %s", logPrefix, topic, err))
 		}
 	}
 	h.dChan <- struct{}{}

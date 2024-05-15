@@ -1,29 +1,32 @@
 package connector
 
 import (
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
+	"fmt"
+
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/location"
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
+	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
+
+	"strings"
 
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-	"strings"
 )
 
 func (connector *Connector) ForwardOperatorResult(payload []byte, fogTopic string) error {
 	baseOperatorName := GetOperatorNameFromTopic(fogTopic)
 	cloudOperatorTopic, _ := operator.GenerateOperatorOutputTopic(baseOperatorName, "", "", location.Cloud)
 	platformTopic := upstream.CloudUpstreamTopic + "/" + cloudOperatorTopic
-	logging.Logger.Debugf("Try to publish upstream message: %s to platform topic: %s", string(payload), platformTopic)
+	logging.Logger.Debug(fmt.Sprintf("Try to publish upstream message: %s to platform topic: %s", string(payload), platformTopic))
 	message := Message{
 		topic: platformTopic,
 		payload: payload,
 	}
 	err := connector.CloudMessageRelayHandler.Put(message)
 	if err != nil {
-		logging.Logger.Errorf("Cant publish upstream message to platform broker ")
+		logging.Logger.Error("Cant publish upstream message to platform broker: " + err.Error())
 		return err
 	}
-	logging.Logger.Debugf("Successfully published upstream message")
+	logging.Logger.Debug("Successfully published upstream message")
 	return nil
 }
 
@@ -37,27 +40,27 @@ func GetOperatorNameFromTopic(topic string) (string) {
 // or on startup get current list with topics
 func (connector *Connector) EnableForwarding(enableMessage upstream.UpstreamControlMessage) error {
 	topic := enableMessage.OperatorOutputTopic
-	logging.Logger.Infof("Try to subscribe to %s", topic)
+	logging.Logger.Info("Try to subscribe to: " + topic)
 	err := connector.FogMQTTClient.Subscribe(topic, 2)
 	if err != nil {
-		logging.Logger.Errorf("Cant subscribe to operator output topic %s: %s", topic, err)
+		logging.Logger.Error(fmt.Sprintf("Cant subscribe to operator output topic %s: %s", topic, err))
 		return err
 	}
-	logging.Logger.Infof("Successfully subscribed to %s", topic)
+	logging.Logger.Info("Successfully subscribed to: " + topic)
 
 	return nil
 }
 
 func (connector *Connector) DisableForwarding(disableMessage upstream.UpstreamControlMessage) error {
 	topic := disableMessage.OperatorOutputTopic
-	logging.Logger.Infof("Try to unsubscribe from %s", topic)
+	logging.Logger.Info("Try to unsubscribe from: " + topic)
 
 	err := connector.FogMQTTClient.Unsubscribe(topic)
 	if err != nil {
-		logging.Logger.Errorf("Cant unsubscribe from operator output topic %s: %s", topic, err)
+		logging.Logger.Error(fmt.Sprintf("Cant unsubscribe from operator output topic %s: %s", topic, err))
 		return err
 	}
-	logging.Logger.Infof("Successfully unsubscribed from %s", topic)
+	logging.Logger.Info("Successfully unsubscribed from: " + topic)
 	return nil
 }
 

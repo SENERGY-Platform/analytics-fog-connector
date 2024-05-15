@@ -5,6 +5,8 @@ import (
 
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"os"
+	"path/filepath"
 )
 
 
@@ -13,15 +15,34 @@ type VerneMQ struct {
 }
 
 func NewVerneMQ(ctx context.Context) (*VerneMQ, error) {
+	absPath, err := filepath.Abs(filepath.Join("..", "dependencies", "acl.txt"))
+	if err != nil {
+		return &VerneMQ{}, err
+	}
+	r, err := os.Open(absPath)
+	if err != nil {
+		return &VerneMQ{}, err 
+	}
+
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
-			Image:           "ghcr.io/senergy-platform/vernemq:prod",
+			Image:           "vernemq/vernemq",
 			Tmpfs:           map[string]string{},
 			ExposedPorts:    []string{"1883/tcp"},
 			WaitingFor:      wait.ForListeningPort("1883/tcp"),
 			AlwaysPullImage: true,
 			Env: map[string]string{
+				"DOCKER_VERNEMQ_LOG__CONSOLE__LEVEL": "debug",
 				"DOCKER_VERNEMQ_ALLOW_ANONYMOUS": "on",
+				"DOCKER_VERNEMQ_ACCEPT_EULA": "yes",
+			},
+			Files: []testcontainers.ContainerFile{
+				{
+					Reader:            r,
+					HostFilePath:      "./tests/dependencies/acl.txt", // will be discarded internally
+					ContainerFilePath: "/etc/vernemq/vmq.acl",
+					FileMode:          0o777,
+				},
 			},
 		},
 		Started: false,

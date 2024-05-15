@@ -13,7 +13,7 @@ func(message Message) Topic() string {
 }
 
 func(message Message) Payload() []byte {
-	return message.Payload()
+	return message.payload
 }
 
 func(message Message) Timestamp() time.Time {

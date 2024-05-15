@@ -17,22 +17,14 @@
 package main
 
 import (
-	"errors"
-	"fmt"
+	"context"
 	"log"
 	"os"
-	"syscall"
-	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/send_relay"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/mqtt"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/relay"
-	srv_base "github.com/SENERGY-Platform/go-service-base/util"
-	"github.com/SENERGY-Platform/go-service-base/watchdog"
+
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib"
 	"github.com/joho/godotenv"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 )
 
 func main() {
@@ -42,84 +34,19 @@ func main() {
 	}()
 
 	log.Println("Load .env file")
-	err := godotenv.Load()
-	if err != nil {
-		log.Print("Error loading .env file")
-	}
+	_ = godotenv.Load()
 
 	log.Println("Load config")
 	config, err := config.NewConfig("")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		ec = 1
-		return
 	}
-
-	log.Println("Init Logger")
-	logFile, err := logging.InitLogger(config.Logger)
-	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err)
-		var logFileError *srv_base.LogFileError
-		if errors.As(err, &logFileError) {
-			ec = 1
-			return
-		}
-	}
-	if logFile != nil {
-		defer logFile.Close()
-	}
-
-	watchdog.Logger = logging.Logger
-	watchdog := watchdog.New(syscall.SIGINT, syscall.SIGTERM)
-
-	logging.Logger.Info("Get User ID")
 	authClient := auth.NewAuthClient(config.KeyCloakURL, config.ClientID)
-	userID, err := authClient.GetUserID(config.Username, config.Password)
+
+	err = lib.Run(context.Background(), os.Stdout, os.Stderr, authClient, *config)
 	if err != nil {
-		logging.Logger.Error("Cant login user and get user id")
+		log.Print("Error starting app: " + err.Error())
 		ec = 1
-		return
 	}
-
-	logging.Logger.Info("Setup Fog Broker connection")
-	fogbrokerConfig := mqttLib.BrokerConfig(config.FogBroker)
-	fogMqttClient := mqtt.NewFogMQTTClient(fogbrokerConfig, logging.Logger)
-	watchdog.RegisterStopFunc(func() error {
-		fogMqttClient.CloseConnection()
-		return nil
-	})
-
-	logging.Logger.Info("Setup Platform Broker connection")
-	PlatformBrokerConfig := mqttLib.BrokerConfig(config.PlatformBroker)
-	platformMqttClient := mqtt.NewPlatformMQTTClient(PlatformBrokerConfig, userID, logging.Logger)
-	watchdog.RegisterStopFunc(func() error {
-		platformMqttClient.CloseConnection()
-		return nil
-	})
-
-	localMqttClientPubF := func(topic string, data []byte) error {
-		return fogMqttClient.Publish(topic, string(data), 1)
-	}
-	localMessageRelayHandler := send_relay.New(10000, localMqttClientPubF)
-
-	cloudMqttClientPubF := func(topic string, data []byte) error {
-		return platformMqttClient.Publish(topic, string(data), 1)
-	}
-	cloudMessageRelayHandler := send_relay.New(10000, cloudMqttClientPubF)
-
-	logging.Logger.Info("Setup Connector, Upstream, Sync and Relay Controller")
-	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform, userID, localMessageRelayHandler, cloudMessageRelayHandler)
-	relayController := relay.NewRelayController(connector, userID, config.PublishResultsToPlatform)
-
-	fogMqttClient.SetRelayController(relayController)
-	platformMqttClient.SetRelayController(relayController)
-
-	logging.Logger.Info("Connect to brokers")
-	fogMqttClient.ConnectMQTTBroker(nil, nil)
-	platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
-
-	logging.Logger.Info("Connector is ready")
-	watchdog.Start()
-
-	ec = watchdog.Join()
 }
