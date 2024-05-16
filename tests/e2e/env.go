@@ -128,11 +128,11 @@ func NewEnv(ctx context.Context, t *testing.T) (*Env, error) {
 	}, nil
 }
 
-func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan string) (error, string, string) {
+func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan string) (error) {
 	t.Log("Start Verne")
 	err, cloudBrokerPort := e.cloudBroker.StartAndWait(ctx)
 	if err != nil {
-		return err, "", ""
+		return err
 	}
 	e.cloudBrokerPort = cloudBrokerPort
 	t.Log("Started Verne")
@@ -140,7 +140,7 @@ func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan s
 	t.Log("Start Mosquitto")
 	err, fogBrokerPort := e.fogBroker.StartAndWait(ctx)
 	if err != nil {
-		return err, "", ""
+		return err
 	}
 	e.fogBrokerPort = fogBrokerPort
 	t.Log("Started Mosquitto")
@@ -148,11 +148,11 @@ func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan s
 	t.Log("Start Connector")
 	err = e.StartAndWait(ctx, t, applicationLogChan)
 	if err != nil {
-		return err, "", ""
+		return err
 	}
 	t.Log("Started Connector")
 	
-	return nil, cloudBrokerPort, fogBrokerPort
+	return nil
 }
 
 func (e *Env) PublishToCloud(topic string, payload []byte, t *testing.T) error {

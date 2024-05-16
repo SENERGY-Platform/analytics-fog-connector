@@ -66,7 +66,9 @@ func (connector *Connector) DisableForwarding(disableMessage upstream.UpstreamCo
 
 // TODO unsubscribe 
 func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyncMessage) error {
+	logging.Logger.Debug("Try to enable forwarding ")
 	for _, topic := range(syncMessage.OperatorOutputTopics) {
+		logging.Logger.Debug("Try to enable forwarding for: " + topic)
 		err := connector.EnableForwarding(upstream.UpstreamControlMessage{
 			OperatorOutputTopic: topic,
 		})

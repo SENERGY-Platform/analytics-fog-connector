@@ -2,21 +2,23 @@ package e2e
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"testing"
 	"time"
+
+	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
+	testLib "github.com/hahahannes/e2e-go-utils/lib"
 	"github.com/hahahannes/e2e-go-utils/lib/streaming/mqtt"
 	"github.com/stretchr/testify/assert"
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
-	"encoding/json"
-	testLib "github.com/hahahannes/e2e-go-utils/lib"
 )
 
 func TestDisableForwarding(t *testing.T) {
-
 }
 
 func TestSyncResponseForwarding(t *testing.T) {
-	// Sync the enabled/disabled forwarding for local operator output 
+	// Sync the forwarding rules based on a sync response from cloud
+	// The sync is requested at startup and reconnects but here I just send the sync response manually
 	
 	ctx := context.Background()
 	env, err := NewEnv(ctx, t)
@@ -25,19 +27,43 @@ func TestSyncResponseForwarding(t *testing.T) {
 		return 
 	}
 
-	err, _, mosquittoPort := env.Start(ctx, t, make(chan string))
+	appLogChan := make(chan string)
+	err = env.Start(ctx, t, appLogChan)
 	if err != nil {
 		t.Error(err)
 		return 
 	}
 
-	operatorTopic :=  "fog/analytics/" + env.UserID + "/upstream/enable"
-	fogOperatorTopic := "analytics/operator/control/stop"
-	msg := "test"
+	localOperatorOutput := "Test"
+	opName := "op"
+	opID := "op1"
+	pipeID := "pipe"
+	localOperatorOutputTopic := "foo/bar/" + opName + "/" + opID + "/" + pipeID
+	cloudOperatorOutputTopic := "fog/analytics/upstream/messages/analytics-" + opName
+	syncResponseTopic := "fog/analytics/"+ env.UserID+ "/upstream/sync/response"
 
-	result, err := mqtt.WaitForMQTTMessageReceived(fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
-		return env.PublishToCloud(operatorTopic, []byte(msg), t)
-	}, 15 * time.Second, "localhost", mosquittoPort, true)
+	result, err := mqtt.WaitForMQTTMessageReceived(cloudOperatorOutputTopic, ".*" + localOperatorOutput + ".*", func(context.Context) error {
+		synCmd := upstream.UpstreamSyncMessage{
+			OperatorOutputTopics: []string{localOperatorOutputTopic},
+		}
+		syncMessage, err := json.Marshal(synCmd)
+		if err != nil {
+			return err
+		}
+		received, err := testLib.WaitForStringReceived(".*Successfully subscribed to:.*", func (sendCtx context.Context) error {
+			return env.PublishToCloud(syncResponseTopic, []byte(syncMessage), t)
+		}, appLogChan, 30 * time.Second, true)
+		if err != nil {
+			return err
+		}
+		if received.Error != nil {
+			return err
+		}
+		if received.Received == false {
+			return errors.New("Subscribe Log to operator topic not received")
+		}
+		return env.PublishToFog(localOperatorOutputTopic, []byte(localOperatorOutput), t)
+	}, 60 * time.Second, "localhost", env.cloudBrokerPort, false)
 	if err != nil {
 		t.Error(err)
 		return 
@@ -60,7 +86,7 @@ func TestEnableForwarding(t *testing.T) {
 	}
 
 	appLogChan := make(chan string)
-	err, _, _ = env.Start(ctx, t, appLogChan)
+	err = env.Start(ctx, t, appLogChan)
 	if err != nil {
 		t.Error(err)
 		return 

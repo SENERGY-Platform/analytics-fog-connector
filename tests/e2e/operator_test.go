@@ -17,7 +17,7 @@ func TestForwardStart(t *testing.T) {
 		return 
 	}
 
-	err, _, mosquittoPort := env.Start(ctx, t, make(chan string))
+	err = env.Start(ctx, t, make(chan string))
 	if err != nil {
 		t.Error(err)
 		return 
@@ -29,7 +29,7 @@ func TestForwardStart(t *testing.T) {
 
 	result, err := mqtt.WaitForMQTTMessageReceived(fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
 		return env.PublishToCloud(operatorTopic, []byte(msg), t)
-	}, 15 * time.Second, "localhost", mosquittoPort, true)
+	}, 15 * time.Second, "localhost", env.fogBrokerPort, true)
 	if err != nil {
 		t.Error(err)
 		return 
@@ -50,7 +50,7 @@ func TestForwardStop(t *testing.T) {
 		return 
 	}
 
-	err, _, mosquittoPort := env.Start(ctx, t, make(chan string))
+	err = env.Start(ctx, t, make(chan string))
 	if err != nil {
 		t.Error(err)
 		return 
@@ -62,7 +62,7 @@ func TestForwardStop(t *testing.T) {
 
 	result, err := mqtt.WaitForMQTTMessageReceived(fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
 		return env.PublishToCloud(operatorTopic, []byte(msg), t)
-	}, 15 * time.Second, "localhost", mosquittoPort, true)
+	}, 15 * time.Second, "localhost", env.fogBrokerPort, true)
 	if err != nil {
 		t.Error(err)
 		return 
@@ -84,7 +84,7 @@ func TestOperatorSync(t *testing.T) {
 		return 
 	}
 
-	err, _, mosquittoPort := env.Start(ctx, t, make(chan string))
+	err = env.Start(ctx, t, make(chan string))
 	if err != nil {
 		t.Error(err)
 		return 
@@ -96,7 +96,7 @@ func TestOperatorSync(t *testing.T) {
 
 	result, err := mqtt.WaitForMQTTMessageReceived(fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
 		return env.PublishToCloud(operatorTopic, []byte(msg), t)
-	}, 15 * time.Second, "localhost", mosquittoPort, true)
+	}, 15 * time.Second, "localhost", env.fogBrokerPort, true)
 	if err != nil {
 		t.Error(err)
 		return 

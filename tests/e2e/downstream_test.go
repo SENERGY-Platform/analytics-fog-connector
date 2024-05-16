@@ -17,7 +17,7 @@ func TestForwardCloudOperatorMsg(t *testing.T) {
 		return 
 	}
 
-	err, _, mosquittoPort := env.Start(ctx, t, make(chan string))
+	err = env.Start(ctx, t, make(chan string))
 	if err != nil {
 		t.Error(err)
 		return 
@@ -33,7 +33,7 @@ func TestForwardCloudOperatorMsg(t *testing.T) {
 
 	result, err := mqtt.WaitForMQTTMessageReceived(fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
 		return env.PublishToCloud(operatorTopic, []byte(msg), t)
-	}, 15 * time.Second, "localhost", mosquittoPort, true)
+	}, 15 * time.Second, "localhost", env.fogBrokerPort, true)
 	if err != nil {
 		t.Error(err)
 		return 
