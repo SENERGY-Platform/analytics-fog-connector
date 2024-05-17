@@ -42,7 +42,6 @@ func (relay *RelayController) processUpstreamSync(message []byte) {
 	if err != nil {
 		logging.Logger.Error("Cant unmarshal upstream sync message: " + err.Error())
 	}
-	logging.Logger.Debug("2")
 	err = relay.Connector.SyncUpstreamForward(syncMessage)
 	if err != nil {
 		logging.Logger.Error("Cant sync forwarding: " + err.Error())
