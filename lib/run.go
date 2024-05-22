@@ -57,7 +57,7 @@ func Run(
 	})
 
 	localMqttClientPubF := func(topic string, data []byte) error {
-		return fogMqttClient.Publish(topic, string(data), 1)
+		return fogMqttClient.Publish(topic, string(data), 2)
 	}
 	localMessageRelayHandler := send_relay.New(10000, localMqttClientPubF)
 	watchdog.RegisterStopFunc(func() error {
@@ -66,7 +66,7 @@ func Run(
 	})
 
 	cloudMqttClientPubF := func(topic string, data []byte) error {
-		return platformMqttClient.Publish(topic, string(data), 1)
+		return platformMqttClient.Publish(topic, string(data), 2)
 	}
 	cloudMessageRelayHandler := send_relay.New(10000, cloudMqttClientPubF)
 	watchdog.RegisterStopFunc(func() error {
