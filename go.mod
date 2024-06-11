@@ -10,7 +10,9 @@ require (
 	github.com/SENERGY-Platform/go-service-base/util v0.14.0
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3
+	github.com/hahahannes/e2e-go-utils v1.1.12
 	github.com/joho/godotenv v1.5.1
+	github.com/testcontainers/testcontainers-go v0.30.0
 	github.com/y-du/go-log-level v0.2.3
 )
 
@@ -38,7 +40,6 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/hahahannes/e2e-go-utils v1.1.12 // indirect
 	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -58,7 +59,6 @@ require (
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
-	github.com/testcontainers/testcontainers-go v0.30.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/y-du/go-env-loader v0.5.1 // indirect
