@@ -3,7 +3,6 @@ package connector
 import (
 	"fmt"
 
-	"github.com/SENERGY-Platform/analytics-fog-lib/lib/location"
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/operator"
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
 
@@ -14,7 +13,7 @@ import (
 
 func (connector *Connector) ForwardOperatorResult(payload []byte, fogTopic string) error {
 	baseOperatorName := GetOperatorNameFromTopic(fogTopic)
-	cloudOperatorTopic, _ := operator.GenerateOperatorOutputTopic(baseOperatorName, "", "", location.Cloud)
+	cloudOperatorTopic := operator.GenerateCloudOperatorTopic(baseOperatorName)
 	platformTopic := upstream.CloudUpstreamTopic + "/" + cloudOperatorTopic
 	logging.Logger.Debug(fmt.Sprintf("Try to publish upstream message: %s to platform topic: %s", string(payload), platformTopic))
 	message := Message{
@@ -36,8 +35,6 @@ func GetOperatorNameFromTopic(topic string) (string) {
 	return operatorName
 }
 
-// TODO !!! store topics on disk that must be forwarded
-// or on startup get current list with topics
 func (connector *Connector) EnableForwarding(enableMessage upstream.UpstreamControlMessage) error {
 	topic := enableMessage.OperatorOutputTopic
 	logging.Logger.Info("Try to subscribe to: " + topic)
