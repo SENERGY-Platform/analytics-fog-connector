@@ -26,6 +26,7 @@ func NewConfig(path string) (*Config, error) {
 		},
 		Debug: false,
 		DataDir: "./data",
+		SyncIntervalInSeconds: 120,
 	}
 
 	err := srv_base.LoadConfig(path, &cfg, nil, nil, nil)

@@ -83,6 +83,7 @@ func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan
 		DataDir: ".",
 		FogBroker: mqttLib.FogBrokerConfig{Host:"localhost", Port: e.fogBrokerPort},
 		PlatformBroker: mqttLib.PlatformBrokerConfig{Host:"localhost", Port: e.cloudBrokerPort},
+		SyncIntervalInSeconds: 60,
 	}
 	
 	received, err := testLib.WaitForStringReceived(".*Connector is ready.*", func (sendCtx context.Context) error {
