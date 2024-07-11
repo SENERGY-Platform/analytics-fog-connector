@@ -15,6 +15,7 @@ type Config struct {
 	Username    string                `json:"username" env_var:"AUTH_USERNAME"`
 	Password    string                `json:"password" env_var:"AUTH_PASSWORD"`
 	PublishResultsToPlatform bool 	`json:"publish_to_platform" env_var:"PUBLISH_RESULTS_TO_PLATFORM"`
+	SyncIntervalInSeconds    int                `json:"sync_interval" env_var:"SYNC_INTERVAL"`
 }
 
 func NewConfig(path string) (*Config, error) {

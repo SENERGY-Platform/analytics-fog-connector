@@ -28,3 +28,8 @@ func (connector *Connector) SyncOperatorStates(payload []byte) error {
 	}
 	return connector.LocalMessageRelayHandler.Put(message)
 }
+
+func (connector *Connector) RequestOperatorSync() error {
+	topic := operator.GetOperatorControlSyncTriggerPubTopic(connector.UserID)
+	return connector.PlatformMQTTClient.Publish(topic, "", 2)
+}

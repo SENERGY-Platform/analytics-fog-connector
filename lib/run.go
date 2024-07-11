@@ -16,6 +16,7 @@ import (
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/send_relay"
 	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
 	"github.com/SENERGY-Platform/go-service-base/watchdog"
+	"time"
 )
 
 func Run(
@@ -84,6 +85,9 @@ func Run(
 	logging.Logger.Info("Connect to brokers")
 	fogMqttClient.ConnectMQTTBroker(nil, nil)
 	platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
+
+	logging.Logger.Info("Start Periodic Sync of Operators and Upstream")
+	go connector.RequestSyncs(ctx, time.Duration(config.SyncIntervalInSeconds))
 
 	cloudMessageRelayHandler.Start()
 	localMessageRelayHandler.Start()

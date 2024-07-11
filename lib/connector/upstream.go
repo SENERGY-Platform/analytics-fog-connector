@@ -76,4 +76,7 @@ func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyn
 	return nil
 }
 
-
+func (connector *Connector) RequestUpstreamSync() error {
+	topic := upstream.GetUpstreamControlSyncTriggerPubTopic(connector.UserID)
+	return connector.PlatformMQTTClient.Publish(topic, "", 2)
+}
