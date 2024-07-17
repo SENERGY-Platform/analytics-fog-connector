@@ -12,7 +12,7 @@ type Connector struct {
 	UserID string
 	LocalMessageRelayHandler itf.MessageRelayHandler
 	CloudMessageRelayHandler itf.MessageRelayHandler
-
+	SubscriptedTopics map[string]int
 }
 
 func NewConnector(fogMqttClient mqtt.MQTTClient, platformMqttClient mqtt.MQTTClient, publishResultsToPlatform bool, userID string, LocalMessageRelayHandler itf.MessageRelayHandler, CloudMessageRelayHandler itf.MessageRelayHandler) *Connector {

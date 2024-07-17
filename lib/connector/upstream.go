@@ -38,11 +38,13 @@ func GetOperatorNameFromTopic(topic string) (string) {
 func (connector *Connector) EnableForwarding(enableMessage upstream.UpstreamControlMessage) error {
 	topic := enableMessage.OperatorOutputTopic
 	logging.Logger.Info("Try to subscribe to: " + topic)
-	err := connector.FogMQTTClient.Subscribe(topic, 2)
+	qos := 2
+	err := connector.FogMQTTClient.Subscribe(topic, qos)
 	if err != nil {
 		logging.Logger.Error(fmt.Sprintf("Cant subscribe to operator output topic %s: %s", topic, err))
 		return err
 	}
+	connector.SubscriptedTopics[topic] = qos
 	logging.Logger.Info("Successfully subscribed to: " + topic)
 
 	return nil
@@ -61,12 +63,53 @@ func (connector *Connector) DisableForwarding(disableMessage upstream.UpstreamCo
 	return nil
 }
 
-// TODO unsubscribe 
 func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyncMessage) error {
-	logging.Logger.Debug("Try to enable forwarding ")
-	for _, topic := range(syncMessage.OperatorOutputTopics) {
+	logging.Logger.Debug("Sync upstream forwardings")
+	topicsWithMissingForwarding := []string{}
+	for _, expectedTopic := range(syncMessage.OperatorOutputTopics) {
+		_, ok := connector.SubscriptedTopics[expectedTopic]; if !ok {
+			topicsWithMissingForwarding = append(topicsWithMissingForwarding, expectedTopic)
+		}
+	}
+	connector.EnableMissingForwarding(topicsWithMissingForwarding)
+
+	topicsWithOrphanForwardings := []string{}
+	for topicWithActiveForwarding, _ := range(connector.SubscriptedTopics) {
+		topicShallBeForwarded := false
+		for _, expectedTopic := range(syncMessage.OperatorOutputTopics) {
+			if expectedTopic == topicWithActiveForwarding {
+				topicShallBeForwarded = true
+				break
+			}
+		}
+
+		if !topicShallBeForwarded {
+			topicsWithOrphanForwardings = append(topicsWithOrphanForwardings, topicWithActiveForwarding)
+		}
+	}
+	connector.EnableMissingForwarding(topicsWithMissingForwarding)
+	return nil
+}
+
+func (connector *Connector) EnableMissingForwarding(operatorTopics []string) error {
+	logging.Logger.Debug("Enable missing upstream forwardings for: " + strings.Join(operatorTopics, ","))
+	for _, topic := range(operatorTopics) {
 		logging.Logger.Debug("Try to enable forwarding for: " + topic)
 		err := connector.EnableForwarding(upstream.UpstreamControlMessage{
+			OperatorOutputTopic: topic,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (connector *Connector) DisableOrphanForwarding(operatorTopics []string) error {
+	logging.Logger.Debug("Disable orphan upstream forwardings for: " + strings.Join(operatorTopics, ","))
+	for _, topic := range(operatorTopics) {
+		logging.Logger.Debug("Try to disable forwarding for: " + topic)
+		err := connector.DisableForwarding(upstream.UpstreamControlMessage{
 			OperatorOutputTopic: topic,
 		})
 		if err != nil {
