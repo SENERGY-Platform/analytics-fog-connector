@@ -23,5 +23,6 @@ func NewConnector(fogMqttClient mqtt.MQTTClient, platformMqttClient mqtt.MQTTCli
 		UserID: userID,
 		LocalMessageRelayHandler: LocalMessageRelayHandler,
 		CloudMessageRelayHandler: CloudMessageRelayHandler,
+		SubscriptedTopics: map[string]int{},
 	}
 }
