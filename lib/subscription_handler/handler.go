@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package relay
+package subscriptionhandler
 
 import (
 	"strings"
@@ -29,59 +29,59 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
-type RelayController struct {
+type SubscriptionHandler struct {
 	Connector *connector.Connector
 	UserID    string
 	PublishResultsToPlatform bool
 }
 
-func NewRelayController(connector *connector.Connector, userID string, publishResultsToPlatform bool) *RelayController {
-	return &RelayController{
+func NewSubscriptionHandler(connector *connector.Connector, userID string, publishResultsToPlatform bool) *SubscriptionHandler {
+	return &SubscriptionHandler{
 		Connector: connector,
 		UserID:    userID,
 		PublishResultsToPlatform: publishResultsToPlatform,
 	}
 }
 
-func (relay *RelayController) ProcessMessage(message MQTT.Message) {
+func (handler *SubscriptionHandler) ProcessMessage(message MQTT.Message) {
 	payload := message.Payload()
 	topic := message.Topic() 
 
 	switch topic {
 	// Operator Control 
-	case operator.GetStartOperatorCloudTopic(relay.UserID):
-		relay.processStartOperatorCommand(payload)
+	case operator.GetStartOperatorCloudTopic(handler.UserID):
+		handler.processStartOperatorCommand(payload)
 		return
-	case operator.GetStopOperatorCloudTopic(relay.UserID):
-		relay.processStopOperatorCommand(payload)
+	case operator.GetStopOperatorCloudTopic(handler.UserID):
+		handler.processStopOperatorCommand(payload)
 		return
-	case operator.GetOperatorControlSyncResponseTopic(relay.UserID):
-		relay.processOperatorSync(payload)
+	case operator.GetOperatorControlSyncResponseTopic(handler.UserID):
+		handler.processOperatorSync(payload)
 		return
 
 	// Upstream Forward Control
-	case upstreamLib.GetUpstreamDisableCloudTopic(relay.UserID):
-		relay.processUpstreamDisable(payload)
+	case upstreamLib.GetUpstreamDisableCloudTopic(handler.UserID):
+		handler.processUpstreamDisable(payload)
 		return 
-	case upstreamLib.GetUpstreamEnableCloudTopic(relay.UserID):
-		relay.processUpstreamEnable(payload)
+	case upstreamLib.GetUpstreamEnableCloudTopic(handler.UserID):
+		handler.processUpstreamEnable(payload)
 		return 
-	case upstreamLib.GetUpstreamControlSyncResponseTopic(relay.UserID):
-		relay.processUpstreamSync(payload)
+	case upstreamLib.GetUpstreamControlSyncResponseTopic(handler.UserID):
+		handler.processUpstreamSync(payload)
 		return
 	}
 
-	if strings.HasPrefix(topic, downstreamLib.GetDownstreamOperatorCloudMatchTopic(relay.UserID)) {
+	if strings.HasPrefix(topic, downstreamLib.GetDownstreamOperatorCloudMatchTopic(handler.UserID)) {
 		// Prefix match
-		relay.processOperatorDownstreamMessage(payload, topic)
+		handler.processOperatorDownstreamMessage(payload, topic)
 		return
 	}
 
 	// default are all operator topics that connector subscribed to
-	relay.processMessageToUpstream(payload, message.Topic())
+	handler.processMessageToUpstream(payload, message.Topic())
 }
 
-func (relay *RelayController) OnMessageReceived(client MQTT.Client, message MQTT.Message) {
+func (handler *SubscriptionHandler) OnMessageReceived(client MQTT.Client, message MQTT.Message) {
 	logging.Logger.Debug("Received message on topic: " + message.Topic() + "\nMessage: " + string(message.Payload()))
-	go relay.ProcessMessage(message)
+	go handler.ProcessMessage(message)
 }

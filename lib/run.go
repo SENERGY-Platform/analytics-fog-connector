@@ -12,7 +12,8 @@ import (
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/relay"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/subscription_handler"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/send_relay"
 	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
 	"github.com/SENERGY-Platform/go-service-base/watchdog"
@@ -77,10 +78,17 @@ func Run(
 
 	logging.Logger.Info("Setup Connector, Upstream, Sync and Relay Controller")
 	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform, userID, localMessageRelayHandler, cloudMessageRelayHandler)
-	relayController := relay.NewRelayController(connector, userID, config.PublishResultsToPlatform)
-
-	fogMqttClient.SetRelayController(relayController)
-	platformMqttClient.SetRelayController(relayController)
+	subscriptionHandler := subscriptionhandler.NewSubscriptionHandler(connector, userID, config.PublishResultsToPlatform)
+	// SubscriptionHandler for fog and platform each 
+	
+	fogMqttClient.SetConnectionLostHandler(func(MQTT.Client) {
+		logging.Logger.Debug("Connection to fog broker lost -> Clear cache of local operator topic subscriptions")
+		connector.HandleOnDisconnect()
+	})
+	
+	fogMqttClient.SetSubscriptionHandler(subscriptionHandler)
+	
+	platformMqttClient.SetSubscriptionHandler(subscriptionHandler)
 
 	logging.Logger.Info("Connect to brokers")
 	fogMqttClient.ConnectMQTTBroker(nil, nil)

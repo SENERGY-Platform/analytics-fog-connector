@@ -3,6 +3,8 @@ package connector
 import (
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/mqtt"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/itf"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
+	"sync"
 )
 
 type Connector struct {
@@ -12,7 +14,8 @@ type Connector struct {
 	UserID string
 	LocalMessageRelayHandler itf.MessageRelayHandler
 	CloudMessageRelayHandler itf.MessageRelayHandler
-	SubscriptedTopics map[string]int
+	SubscriptedLocalTopics map[string]struct{}
+	mu                      sync.RWMutex
 }
 
 func NewConnector(fogMqttClient mqtt.MQTTClient, platformMqttClient mqtt.MQTTClient, publishResultsToPlatform bool, userID string, LocalMessageRelayHandler itf.MessageRelayHandler, CloudMessageRelayHandler itf.MessageRelayHandler) *Connector {
@@ -23,6 +26,13 @@ func NewConnector(fogMqttClient mqtt.MQTTClient, platformMqttClient mqtt.MQTTCli
 		UserID: userID,
 		LocalMessageRelayHandler: LocalMessageRelayHandler,
 		CloudMessageRelayHandler: CloudMessageRelayHandler,
-		SubscriptedTopics: map[string]int{},
+		SubscriptedLocalTopics: map[string]struct{}{},
 	}
+}
+
+func (h *Connector) HandleOnDisconnect() {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	clear(h.SubscriptedLocalTopics)
+	logging.Logger.Debug("Cleared list of subscriptions to local topics")
 }

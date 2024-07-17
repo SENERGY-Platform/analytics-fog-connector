@@ -36,6 +36,8 @@ func GetOperatorNameFromTopic(topic string) (string) {
 }
 
 func (connector *Connector) EnableForwarding(enableMessage upstream.UpstreamControlMessage) error {
+	connector.mu.Lock()
+	defer connector.mu.Unlock()
 	topic := enableMessage.OperatorOutputTopic
 	logging.Logger.Info("Try to subscribe to: " + topic)
 	qos := 2
@@ -44,7 +46,7 @@ func (connector *Connector) EnableForwarding(enableMessage upstream.UpstreamCont
 		logging.Logger.Error(fmt.Sprintf("Cant subscribe to operator output topic %s: %s", topic, err))
 		return err
 	}
-	connector.SubscriptedTopics[topic] = qos
+	connector.SubscriptedLocalTopics[topic] = struct{}{}
 	logging.Logger.Info("Successfully subscribed to: " + topic)
 
 	return nil
@@ -66,15 +68,22 @@ func (connector *Connector) DisableForwarding(disableMessage upstream.UpstreamCo
 func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyncMessage) error {
 	logging.Logger.Debug("Sync upstream forwardings")
 	topicsWithMissingForwarding := []string{}
+	connector.mu.Lock()
+	currentSubscriptedTopics := map[string]struct{}{} 
+	for topic, _ := range(connector.SubscriptedLocalTopics) {
+		currentSubscriptedTopics[topic] = struct{}{}
+	}
+	connector.mu.Unlock()
+	
 	for _, expectedTopic := range(syncMessage.OperatorOutputTopics) {
-		_, ok := connector.SubscriptedTopics[expectedTopic]; if !ok {
+		_, ok := currentSubscriptedTopics[expectedTopic]; if !ok {
 			topicsWithMissingForwarding = append(topicsWithMissingForwarding, expectedTopic)
 		}
 	}
 	connector.EnableMissingForwarding(topicsWithMissingForwarding)
 
 	topicsWithOrphanForwardings := []string{}
-	for topicWithActiveForwarding, _ := range(connector.SubscriptedTopics) {
+	for topicWithActiveForwarding, _ := range(currentSubscriptedTopics) {
 		topicShallBeForwarded := false
 		for _, expectedTopic := range(syncMessage.OperatorOutputTopics) {
 			if expectedTopic == topicWithActiveForwarding {
@@ -87,7 +96,7 @@ func (connector *Connector) SyncUpstreamForward(syncMessage upstream.UpstreamSyn
 			topicsWithOrphanForwardings = append(topicsWithOrphanForwardings, topicWithActiveForwarding)
 		}
 	}
-	connector.EnableMissingForwarding(topicsWithMissingForwarding)
+	connector.DisableOrphanForwarding(topicsWithOrphanForwardings)
 	return nil
 }
 

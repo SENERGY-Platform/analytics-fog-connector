@@ -43,12 +43,8 @@ func (handler ReconnectHandler) RequestUpstreamForwardSync(client MQTT.Client) e
 	return handler.Publish(client, upstream.GetUpstreamControlSyncTriggerPubTopic(handler.UserID))
 }
 
-func (handler ReconnectHandler) OnConnect(client MQTT.Client) {
+func (handler ReconnectHandler) OnConnectedWithPlatformBroker(client MQTT.Client) {
 	logging.Logger.Debug("Connector connected to platform broker!")
 	handler.RequestOperatorStatesSync(client)
 	handler.RequestUpstreamForwardSync(client)
-}
-
-func OnConnectFog(client MQTT.Client) {
-	logging.Logger.Debug("Connector connected to fog broker!")
 }

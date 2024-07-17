@@ -1,4 +1,4 @@
-package relay
+package subscriptionhandler
 
 import (
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/upstream"
@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 )
 
-func (relay *RelayController) processUpstreamDisable(message []byte) {
+func (handler *SubscriptionHandler) processUpstreamDisable(message []byte) {
 	logging.Logger.Debug("Received upstream disable command: " + string(message))
 
 	disableMessage := upstream.UpstreamControlMessage{}
@@ -15,10 +15,10 @@ func (relay *RelayController) processUpstreamDisable(message []byte) {
 		logging.Logger.Error("Cant unmarshal disable upstream message: " + err.Error())
 	}
 
-	_ = relay.Connector.DisableForwarding(disableMessage)
+	_ = handler.Connector.DisableForwarding(disableMessage)
 }
 
-func (relay *RelayController) processUpstreamEnable(message []byte) {
+func (handler *SubscriptionHandler) processUpstreamEnable(message []byte) {
 	logging.Logger.Debug("Received upstream enable command: " + string(message))
 
 	enableMessage := upstream.UpstreamControlMessage{}
@@ -26,15 +26,15 @@ func (relay *RelayController) processUpstreamEnable(message []byte) {
 	if err != nil {
 		logging.Logger.Error("Cant unmarshal enable upstream message: " + err.Error())
 	}
-	_ = relay.Connector.EnableForwarding(enableMessage)
+	_ = handler.Connector.EnableForwarding(enableMessage)
 }
 
-func (relay *RelayController) processMessageToUpstream(message []byte, topic string) {
+func (handler *SubscriptionHandler) processMessageToUpstream(message []byte, topic string) {
 	logging.Logger.Debug("Received upstream message: " + string(message))
-	_ = relay.Connector.ForwardOperatorResult(message, topic)
+	_ = handler.Connector.ForwardOperatorResult(message, topic)
 }
 
-func (relay *RelayController) processUpstreamSync(message []byte) {
+func (handler *SubscriptionHandler) processUpstreamSync(message []byte) {
 	logging.Logger.Debug("Received upstream sync response: " + string(message))
 
 	syncMessage := upstream.UpstreamSyncMessage{}
@@ -42,7 +42,7 @@ func (relay *RelayController) processUpstreamSync(message []byte) {
 	if err != nil {
 		logging.Logger.Error("Cant unmarshal upstream sync message: " + err.Error())
 	}
-	err = relay.Connector.SyncUpstreamForward(syncMessage)
+	err = handler.Connector.SyncUpstreamForward(syncMessage)
 	if err != nil {
 		logging.Logger.Error("Cant sync forwarding: " + err.Error())
 	}
