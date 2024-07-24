@@ -6,7 +6,7 @@ go 1.21.3
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.8.0
-	github.com/SENERGY-Platform/analytics-fog-lib v1.1.15
+	github.com/SENERGY-Platform/analytics-fog-lib v1.1.24
 	github.com/SENERGY-Platform/go-service-base/util v0.14.0
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3

@@ -84,6 +84,8 @@ github.com/SENERGY-Platform/analytics-fog-lib v1.1.14 h1:2Hg+hMca+yoeyv7rKKgx+1A
 github.com/SENERGY-Platform/analytics-fog-lib v1.1.14/go.mod h1:IbFAOaWXaEkLvNyI9QSq9Mw3PtLCONkrY9WHSpqbDQg=
 github.com/SENERGY-Platform/analytics-fog-lib v1.1.15 h1:ECzQxuaMjiRhZ7Se+qATkTQZZE7EXATtU/5PJF2t9Z4=
 github.com/SENERGY-Platform/analytics-fog-lib v1.1.15/go.mod h1:IbFAOaWXaEkLvNyI9QSq9Mw3PtLCONkrY9WHSpqbDQg=
+github.com/SENERGY-Platform/analytics-fog-lib v1.1.24 h1:HYjhqsrQ8VhT+5tbtpaRYHI0VIDqLPT5Cw6cmzEyrf4=
+github.com/SENERGY-Platform/analytics-fog-lib v1.1.24/go.mod h1:IbFAOaWXaEkLvNyI9QSq9Mw3PtLCONkrY9WHSpqbDQg=
 github.com/SENERGY-Platform/go-service-base/util v0.14.0 h1:oMzPR6zrbHPPgcMi39rDnM3qXh4shP03JRfSyDnnMlw=
 github.com/SENERGY-Platform/go-service-base/util v0.14.0/go.mod h1:uYeWyyknGyxfAx4zvnhppDVjeTfVWOAIMps5mJeaDwU=
 github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1 h1:DiTETrKnnN8gHfxr0m6A+f8Nd54DD6yZmKL5Oi0qF6E=
