@@ -8,8 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestForwardCloudOperatorMsg(t *testing.T) {
-	// Forward a message e.g. cloud operator output 
+func TestDownstream(t *testing.T) {
 	ctx := context.Background()
 	env, err := NewEnv(ctx, t)
 	if err != nil {
@@ -17,7 +16,7 @@ func TestForwardCloudOperatorMsg(t *testing.T) {
 		return 
 	}
 
-	err = env.Start(ctx, t, make(chan string))
+	err = env.Start(ctx, t, make(chan string), "downstream")
 	if err != nil {
 		t.Error(err)
 		return 
@@ -31,9 +30,12 @@ func TestForwardCloudOperatorMsg(t *testing.T) {
 	fogOperatorTopic := "analytics/" + operatorName + "/" + operatorID + "/" + pipelineID
 	msg := "test"
 
-	result, err := mqtt.WaitForMQTTMessageReceived(fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
+	mqttCtx, mqttCf := context.WithTimeout(ctx, 30 * time.Second)
+	defer mqttCf()
+	
+	result, err := mqtt.WaitForMQTTMessageReceived(mqttCtx, fogOperatorTopic, ".*" + msg + ".*", func(context.Context) error {
 		return env.PublishToCloud(operatorTopic, []byte(msg), t)
-	}, 15 * time.Second, "localhost", env.fogBrokerPort, true)
+	}, "localhost", env.fogBrokerPort, false)
 	if err != nil {
 		t.Error(err)
 		return 

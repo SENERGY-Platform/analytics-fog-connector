@@ -44,7 +44,7 @@ func (l *ApplicationLogger) Write(p []byte) (n int, err error) {
 	return 1, nil
 }
 
-func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan string) error {
+func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan string, testName string) error {
 	readyLogChannel := make(chan string, 100)
 	logChannel := make(chan string)
 	logger := &ApplicationLogger{
@@ -54,7 +54,7 @@ func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan
 	}
 
 	go func() {
-		f, err := os.OpenFile("connector.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(fmt.Sprintf("%s.log", testName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Print("Could not open log file")
 		}
@@ -129,7 +129,7 @@ func NewEnv(ctx context.Context, t *testing.T) (*Env, error) {
 	}, nil
 }
 
-func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan string) (error) {
+func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan string, testName string) (error) {
 	t.Log("Start Verne")
 	err, cloudBrokerPort := e.cloudBroker.StartAndWait(ctx)
 	if err != nil {
@@ -147,7 +147,7 @@ func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan s
 	t.Log("Started Mosquitto")
 
 	t.Log("Start Connector")
-	err = e.StartAndWait(ctx, t, applicationLogChan)
+	err = e.StartAndWait(ctx, t, applicationLogChan, testName)
 	if err != nil {
 		return err
 	}

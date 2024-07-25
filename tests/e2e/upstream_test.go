@@ -28,7 +28,7 @@ func TestSyncResponseForwarding(t *testing.T) {
 	}
 
 	appLogChan := make(chan string)
-	err = env.Start(ctx, t, appLogChan)
+	err = env.Start(ctx, t, appLogChan, "upstream_sync")
 	if err != nil {
 		t.Error(err)
 		return 
@@ -42,7 +42,10 @@ func TestSyncResponseForwarding(t *testing.T) {
 	cloudOperatorOutputTopic := "fog/analytics/upstream/messages/analytics-" + opName
 	syncResponseTopic := "fog/analytics/"+ env.UserID+ "/upstream/sync/response"
 
-	result, err := mqtt.WaitForMQTTMessageReceived(cloudOperatorOutputTopic, ".*" + localOperatorOutput + ".*", func(context.Context) error {
+	mqttCtx, mqttCf := context.WithTimeout(ctx, 60 * time.Second)
+	defer mqttCf()
+
+	result, err := mqtt.WaitForMQTTMessageReceived(mqttCtx, cloudOperatorOutputTopic, ".*" + localOperatorOutput + ".*", func(context.Context) error {
 		synCmd := upstream.UpstreamSyncMessage{
 			OperatorOutputTopics: []string{localOperatorOutputTopic},
 		}
@@ -50,9 +53,10 @@ func TestSyncResponseForwarding(t *testing.T) {
 		if err != nil {
 			return err
 		}
+
 		received, err := testLib.WaitForStringReceived(".*Successfully subscribed to:.*", func (sendCtx context.Context) error {
 			return env.PublishToCloud(syncResponseTopic, []byte(syncMessage), t)
-		}, appLogChan, 30 * time.Second, true)
+		}, appLogChan, 30 * time.Second, false)
 		if err != nil {
 			return err
 		}
@@ -63,7 +67,7 @@ func TestSyncResponseForwarding(t *testing.T) {
 			return errors.New("Subscribe Log to operator topic not received")
 		}
 		return env.PublishToFog(localOperatorOutputTopic, []byte(localOperatorOutput), t)
-	}, 60 * time.Second, "localhost", env.cloudBrokerPort, false)
+	}, "localhost", env.cloudBrokerPort, false)
 	if err != nil {
 		t.Error(err)
 		return 
@@ -86,7 +90,7 @@ func TestEnableForwarding(t *testing.T) {
 	}
 
 	appLogChan := make(chan string)
-	err = env.Start(ctx, t, appLogChan)
+	err = env.Start(ctx, t, appLogChan, "upstream")
 	if err != nil {
 		t.Error(err)
 		return 
@@ -98,10 +102,16 @@ func TestEnableForwarding(t *testing.T) {
 	pipeID := "pipe"
 	localOperatortopic := "foo/bar/" + opName + "/" + opID + "/" + pipeID
 	cloudTopic := "fog/analytics/upstream/messages/analytics-" + opName
-	result, err := mqtt.WaitForMQTTMessageReceived(cloudTopic, ".*" + localOperatorOutput + ".*", func(context.Context) error {
-		EnableForwarding(t, env, localOperatortopic, appLogChan)
+
+	ctx, cf := context.WithTimeout(ctx, 60 * time.Second)
+	defer cf()
+	result, err := mqtt.WaitForMQTTMessageReceived(ctx, cloudTopic, ".*" + localOperatorOutput + ".*", func(context.Context) error {
+		err := EnableForwarding(t, env, localOperatortopic, appLogChan)
+		if err != nil {
+			return err
+		}
 		return env.PublishToFog(localOperatortopic, []byte(localOperatorOutput), t)
-	}, 15 * time.Second, "localhost", env.cloudBrokerPort, true)
+	}, "localhost", env.cloudBrokerPort, false)
 	if err != nil {
 		t.Error(err)
 		return 
@@ -126,7 +136,7 @@ func EnableForwarding(t *testing.T, env *Env, localOperatortopic string, appLogC
 			return err
 		}
 		return env.PublishToCloud(operatorTopic, msg, t)
-	}, appLogChan, 30 * time.Second, true)
+	}, appLogChan, 30 * time.Second, false)
 	if err != nil {
 		return err
 	}
