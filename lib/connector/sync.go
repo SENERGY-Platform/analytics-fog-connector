@@ -18,7 +18,7 @@ func (connector *Connector) RequestSyncs(doneCtx context.Context, syncIntervalIn
 			if err != nil {
 				return err 
 			}
-			err = connector.RequestOperatorSync()
+			err = connector.RequestUpstreamSync()
 			return err
 		}
 	}
