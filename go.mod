@@ -1,6 +1,8 @@
 module github.com/SENERGY-Platform/analytics-fog-connector
 
-go 1.21.3
+go 1.24
+
+toolchain go1.24.5
 
 //replace github.com/SENERGY-Platform/analytics-fog-lib => ../analytics-fog-lib
 
@@ -21,6 +23,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/Microsoft/hcsshim v0.12.3 // indirect
+	github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/containerd/containerd v1.7.18 // indirect
 	github.com/containerd/errdefs v0.1.0 // indirect

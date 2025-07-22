@@ -1,5 +1,5 @@
 package auth
 
-type AuthClient interface {
-	GetUserID(string, string) (string, error)
+type IDP interface {
+	GetUserID() (string, error)
 }

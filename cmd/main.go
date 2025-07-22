@@ -22,9 +22,9 @@ import (
 	"os"
 
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib"
-	"github.com/joho/godotenv"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 		log.Println(err)
 		ec = 1
 	}
-	authClient := auth.NewAuthClient(config.KeyCloakURL, config.ClientID)
+	authClient := auth.NewAuthClient(config)
 
 	err = lib.Run(context.Background(), os.Stdout, os.Stderr, authClient, *config)
 	if err != nil {

@@ -16,6 +16,8 @@ github.com/SENERGY-Platform/go-service-base/util v0.14.0 h1:oMzPR6zrbHPPgcMi39rD
 github.com/SENERGY-Platform/go-service-base/util v0.14.0/go.mod h1:uYeWyyknGyxfAx4zvnhppDVjeTfVWOAIMps5mJeaDwU=
 github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1 h1:DiTETrKnnN8gHfxr0m6A+f8Nd54DD6yZmKL5Oi0qF6E=
 github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1/go.mod h1:B28QtfgfMvOGIcQRklRQkPmXArdHyocy8soE7UoSIKU=
+github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2 h1:uMfpHwOJmHpA8b++LjyQcM0rUx2CWnvcIHwT5pO+Jq8=
+github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2/go.mod h1:UPtGbiAOtGd78qgM0HZrtiKxcn3HebSV5QAZvHme998=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=
 github.com/cenkalti/backoff/v4 v4.3.0/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/containerd/containerd v1.7.18 h1:jqjZTQNfXGoEaZdW1WwPU0RqSn1Bm2Ay/KJPUuO8nao=

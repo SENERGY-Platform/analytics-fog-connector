@@ -1,36 +1,19 @@
 package auth
 
 import (
-	"context"
-	"fmt"
-
 	gocloak "github.com/Nerzal/gocloak/v13"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
+	"github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib/client"
+	"net/http"
 )
 
-type KeycloakAuthClient struct {
-	Client   *gocloak.GoCloak
-	ClientID string
-}
-
-func NewAuthClient(keycloakURL string, clientID string) *KeycloakAuthClient {
-	return &KeycloakAuthClient{
-		Client:   gocloak.NewClient(keycloakURL),
-		ClientID: clientID,
+func NewAuthClient(config *config.Config) IDP {
+	if config.MgwCertManagerUrl != "" {
+		return &MgwIdpClient{client: client.New(http.DefaultClient, config.MgwCertManagerUrl)}
 	}
-}
-
-func (client *KeycloakAuthClient) GetUserID(username string, password string) (string, error) {
-	ctx := context.Background()
-	token, err := client.Client.Login(ctx, client.ClientID, "", "master", username, password)
-	if err != nil {
-		logging.Logger.Error(fmt.Sprintf("Cant login user %s: %s", username, err))
-		return "", err
+	return &KeycloakClient{
+		Client:   gocloak.NewClient(config.KeyCloakURL),
+		ClientID: config.ClientID,
+		config:   config,
 	}
-	userInfo, err := client.Client.GetUserInfo(ctx, token.AccessToken, "master")
-	if err != nil {
-		logging.Logger.Error("Cant get user info from token: " + err.Error())
-		return "", err
-	}
-	return *userInfo.Sub, nil
 }

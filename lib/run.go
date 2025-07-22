@@ -12,18 +12,18 @@ import (
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/subscription_handler"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/send_relay"
+	"github.com/SENERGY-Platform/analytics-fog-connector/lib/subscription_handler"
 	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
 	"github.com/SENERGY-Platform/go-service-base/watchdog"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"time"
 )
 
 func Run(
-	ctx    context.Context,
+	ctx context.Context,
 	stdout, stderr io.Writer,
-	authClient auth.AuthClient,
+	authClient auth.IDP,
 	config config.Config,
 ) error {
 	log.Println("Init Logger")
@@ -36,7 +36,7 @@ func Run(
 
 	logging.Logger.Info("Get User ID")
 
-	userID, err := authClient.GetUserID(config.Username, config.Password)
+	userID, err := authClient.GetUserID()
 	if err != nil {
 		logging.Logger.Error("Cant login user and get user id")
 		return err
@@ -79,20 +79,34 @@ func Run(
 	logging.Logger.Info("Setup Connector, Upstream, Sync and Relay Controller")
 	connector := connector.NewConnector(fogMqttClient, platformMqttClient, config.PublishResultsToPlatform, userID, localMessageRelayHandler, cloudMessageRelayHandler)
 	subscriptionHandler := subscriptionhandler.NewSubscriptionHandler(connector, userID, config.PublishResultsToPlatform)
-	// SubscriptionHandler for fog and platform each 
-	
+	// SubscriptionHandler for fog and platform each
+
 	fogMqttClient.SetConnectionLostHandler(func(MQTT.Client) {
 		logging.Logger.Debug("Connection to fog broker lost -> Clear cache of local operator topic subscriptions")
 		connector.HandleOnDisconnect()
 	})
-	
+
 	fogMqttClient.SetSubscriptionHandler(subscriptionHandler)
-	
+
 	platformMqttClient.SetSubscriptionHandler(subscriptionHandler)
 
 	logging.Logger.Info("Connect to brokers")
-	fogMqttClient.ConnectMQTTBroker(nil, nil)
-	platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
+	err = fogMqttClient.ConnectMQTTBroker(nil, nil)
+	if err != nil {
+		return err
+	}
+	if config.Username == "" {
+		//may be configured without credentials, if a proxy broker is used
+		err = platformMqttClient.ConnectMQTTBroker(nil, nil)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
+		if err != nil {
+			return err
+		}
+	}
 
 	logging.Logger.Info("Start Periodic Sync of Operators and Upstream")
 	go connector.RequestSyncs(ctx, time.Duration(config.SyncIntervalInSeconds))
