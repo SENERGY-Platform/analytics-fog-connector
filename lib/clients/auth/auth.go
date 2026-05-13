@@ -1,10 +1,11 @@
 package auth
 
 import (
-	gocloak "github.com/Nerzal/gocloak/v13"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
-	"github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib/client"
 	"net/http"
+
+	"github.com/Nerzal/gocloak/v13"
+	"github.com/SENERGY-Platform/analytics-fog-connector/internal/config"
+	"github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib/client"
 )
 
 func NewAuthClient(config *config.Config) IDP {

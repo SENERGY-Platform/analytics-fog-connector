@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"testing"
 	"time"
-	"os"
 
+	"github.com/SENERGY-Platform/analytics-fog-connector/internal/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/tests/dependencies"
 	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
 	testLib "github.com/hahahannes/e2e-go-utils/lib"
@@ -19,28 +19,28 @@ import (
 
 type ApplicationLogger struct {
 	readyLogChannel chan string
-	logChannel chan string
-	customChannel chan string
+	logChannel      chan string
+	customChannel   chan string
 }
 
 func (l *ApplicationLogger) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	select {
-		// use select default to not block logging when readylogchannel has no receiver anymore after the check
-		case l.readyLogChannel <- msg:
-		default:
+	// use select default to not block logging when readylogchannel has no receiver anymore after the check
+	case l.readyLogChannel <- msg:
+	default:
 	}
 
 	select {
-		case l.logChannel <- msg:
-		default:
+	case l.logChannel <- msg:
+	default:
 	}
 
 	select {
-		case l.customChannel <- msg:
-		default:
+	case l.customChannel <- msg:
+	default:
 	}
-	
+
 	return 1, nil
 }
 
@@ -49,8 +49,8 @@ func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan
 	logChannel := make(chan string)
 	logger := &ApplicationLogger{
 		readyLogChannel: readyLogChannel,
-		logChannel: logChannel,
-		customChannel: customChannel,
+		logChannel:      logChannel,
+		customChannel:   customChannel,
 	}
 
 	go func() {
@@ -58,40 +58,40 @@ func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan
 		if err != nil {
 			fmt.Print("Could not open log file")
 		}
-		
+
 		for {
 			select {
-			case log := <- logChannel:
+			case log := <-logChannel:
 				if _, err := f.Write([]byte(log + "\n")); err != nil {
 					fmt.Print("Could not write to log file")
 				}
-			case <- ctx.Done():
+			case <-ctx.Done():
 				if err := f.Close(); err != nil {
 					fmt.Print("Could not close file")
 				}
 				return
 			}
 		}
-		
+
 	}()
 
 	authMock := auth.MockAuth{
 		UserID: e.UserID,
 	}
 	runConfig := config.Config{
-		Debug: true,
-		DataDir: ".",
-		FogBroker: mqttLib.FogBrokerConfig{Host:"localhost", Port: e.fogBrokerPort},
-		PlatformBroker: mqttLib.PlatformBrokerConfig{Host:"localhost", Port: e.cloudBrokerPort},
+		Debug:                 true,
+		DataDir:               ".",
+		FogBroker:             mqttLib.FogBrokerConfig{Host: "localhost", Port: e.fogBrokerPort},
+		PlatformBroker:        mqttLib.PlatformBrokerConfig{Host: "localhost", Port: e.cloudBrokerPort},
 		SyncIntervalInSeconds: 60,
 	}
-	
-	received, err := testLib.WaitForStringReceived(".*Connector is ready.*", func (sendCtx context.Context) error {
+
+	received, err := testLib.WaitForStringReceived(".*Connector is ready.*", func(sendCtx context.Context) error {
 		return lib.Run(sendCtx, logger, logger, authMock, runConfig)
-	}, readyLogChannel, 30 * time.Second, true)
+	}, readyLogChannel, 30*time.Second, true)
 
 	if err != nil {
-		return err 
+		return err
 	}
 
 	if received.Received == false {
@@ -103,13 +103,13 @@ func (e *Env) StartAndWait(ctx context.Context, t *testing.T, customChannel chan
 }
 
 type Env struct {
-	fogMqttClient *mqtt.MQTTClient
+	fogMqttClient      *mqtt.MQTTClient
 	platformMqttClient *mqtt.MQTTClient
-	cloudBroker *dependencies.Mosquitto
-	fogBroker *dependencies.Mosquitto
-	UserID string
-	cloudBrokerPort string
-	fogBrokerPort string
+	cloudBroker        *dependencies.Mosquitto
+	fogBroker          *dependencies.Mosquitto
+	UserID             string
+	cloudBrokerPort    string
+	fogBrokerPort      string
 }
 
 func NewEnv(ctx context.Context, t *testing.T) (*Env, error) {
@@ -124,12 +124,12 @@ func NewEnv(ctx context.Context, t *testing.T) (*Env, error) {
 
 	return &Env{
 		cloudBroker: cloudBroker,
-		fogBroker: fogBroker,
-		UserID: "user",
+		fogBroker:   fogBroker,
+		UserID:      "user",
 	}, nil
 }
 
-func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan string, testName string) (error) {
+func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan string, testName string) error {
 	t.Log("Start Verne")
 	err, cloudBrokerPort := e.cloudBroker.StartAndWait(ctx)
 	if err != nil {
@@ -152,7 +152,7 @@ func (e *Env) Start(ctx context.Context, t *testing.T, applicationLogChan chan s
 		return err
 	}
 	t.Log("Started Connector")
-	
+
 	return nil
 }
 

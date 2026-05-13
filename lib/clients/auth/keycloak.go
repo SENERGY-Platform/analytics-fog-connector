@@ -3,8 +3,9 @@ package auth
 import (
 	"context"
 	"fmt"
+
 	"github.com/Nerzal/gocloak/v13"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
+	"github.com/SENERGY-Platform/analytics-fog-connector/internal/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
 )
 

@@ -7,9 +7,11 @@ import (
 	"log"
 	"syscall"
 
+	"time"
+
+	"github.com/SENERGY-Platform/analytics-fog-connector/internal/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/mqtt"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/connector"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/logging"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/send_relay"
@@ -17,7 +19,6 @@ import (
 	mqttLib "github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
 	"github.com/SENERGY-Platform/go-service-base/watchdog"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"time"
 )
 
 func Run(

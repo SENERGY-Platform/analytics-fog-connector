@@ -21,9 +21,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/SENERGY-Platform/analytics-fog-connector/internal/config"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib"
 	"github.com/SENERGY-Platform/analytics-fog-connector/lib/clients/auth"
-	"github.com/SENERGY-Platform/analytics-fog-connector/lib/config"
 	"github.com/joho/godotenv"
 )
 
@@ -36,15 +36,18 @@ func main() {
 	log.Println("Load .env file")
 	_ = godotenv.Load()
 
+	config.ParseFlags()
+
 	log.Println("Load config")
-	config, err := config.NewConfig("")
+	cfg, err := config.New(config.ConfPath)
 	if err != nil {
 		log.Println(err)
 		ec = 1
+		return
 	}
-	authClient := auth.NewAuthClient(config)
+	authClient := auth.NewAuthClient(cfg)
 
-	err = lib.Run(context.Background(), os.Stdout, os.Stderr, authClient, *config)
+	err = lib.Run(context.Background(), os.Stdout, os.Stderr, authClient, *cfg)
 	if err != nil {
 		log.Print("Error starting app: " + err.Error())
 		ec = 1

@@ -1,8 +1,24 @@
+/*
+ * Copyright 2026 InfAI (CC SES)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package config
 
 import (
 	"github.com/SENERGY-Platform/analytics-fog-lib/lib/mqtt"
-	srv_base "github.com/SENERGY-Platform/go-service-base/util"
+	sbconfighdl "github.com/SENERGY-Platform/go-service-base/config-hdl"
 )
 
 type Config struct {
@@ -19,7 +35,7 @@ type Config struct {
 	SyncIntervalInSeconds    int    `json:"sync_interval" env_var:"SYNC_INTERVAL"`
 }
 
-func NewConfig(path string) (*Config, error) {
+func New(path string) (*Config, error) {
 	cfg := Config{
 		FogBroker: mqtt.FogBrokerConfig{
 			Port: "1883",
@@ -30,6 +46,6 @@ func NewConfig(path string) (*Config, error) {
 		SyncIntervalInSeconds: 120,
 	}
 
-	err := srv_base.LoadConfig(path, &cfg, nil, nil, nil)
+	err := sbconfighdl.Load(&cfg, nil, nil, nil, path)
 	return &cfg, err
 }

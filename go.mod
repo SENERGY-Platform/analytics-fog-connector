@@ -1,16 +1,13 @@
 module github.com/SENERGY-Platform/analytics-fog-connector
 
-go 1.24
-
-toolchain go1.24.5
-
-//replace github.com/SENERGY-Platform/analytics-fog-lib => ../analytics-fog-lib
+go 1.25
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.8.0
 	github.com/SENERGY-Platform/analytics-fog-lib v1.1.26
-	github.com/SENERGY-Platform/go-service-base/util v0.14.0
+	github.com/SENERGY-Platform/go-service-base/config-hdl v1.2.0
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1
+	github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/hahahannes/e2e-go-utils v1.2.15
 	github.com/joho/godotenv v1.5.1
@@ -23,7 +20,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/Microsoft/hcsshim v0.12.3 // indirect
-	github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2 // indirect
+	github.com/SENERGY-Platform/go-env-loader v0.5.3 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/containerd/containerd v1.7.18 // indirect
 	github.com/containerd/errdefs v0.1.0 // indirect
@@ -65,8 +62,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.8.0 // indirect
-	github.com/y-du/go-env-loader v0.5.1 // indirect
-	github.com/y-du/go-log-level v0.2.3 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.52.0 // indirect
 	go.opentelemetry.io/otel v1.27.0 // indirect
