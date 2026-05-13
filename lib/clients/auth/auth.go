@@ -13,8 +13,10 @@ func NewAuthClient(config *config.Config) IDP {
 		return &MgwIdpClient{client: client.New(http.DefaultClient, config.MgwCertManagerUrl)}
 	}
 	return &KeycloakClient{
-		Client:   gocloak.NewClient(config.KeyCloakURL),
-		ClientID: config.ClientID,
-		config:   config,
+		Client:       gocloak.NewClient(config.KeyCloakConfig.Url),
+		ClientID:     config.KeyCloakConfig.ClientID,
+		ClientSecret: config.KeyCloakConfig.ClientSecret,
+		Realm:        config.KeyCloakConfig.Realm,
+		config:       &config.KeyCloakConfig,
 	}
 }

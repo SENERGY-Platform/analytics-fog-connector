@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.8.0
-	github.com/SENERGY-Platform/analytics-fog-lib v1.1.26
+	github.com/SENERGY-Platform/analytics-fog-lib v1.1.28
 	github.com/SENERGY-Platform/go-service-base/config-hdl v1.2.0
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1
 	github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2

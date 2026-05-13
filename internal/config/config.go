@@ -22,17 +22,23 @@ import (
 )
 
 type Config struct {
-	Debug                    bool `json:"debug" env_var:"DEBUG"`
-	FogBroker                mqtt.FogBrokerConfig
-	PlatformBroker           mqtt.PlatformBrokerConfig
-	DataDir                  string `json:"data_dir" env_var:"DATA_DIR"`
-	MgwCertManagerUrl        string `json:"mgw_cert_manager_url" env_var:"MGW_CERT_MANAGER_URL"` //alternative to KeyCloakURL
-	KeyCloakURL              string `json:"keycloak_url" env_var:"KEYCLOAK_URL"`                 //may be ignored if MgwCertManagerUrl is used
-	ClientID                 string `json:"client_id" env_var:"CLIENT_ID"`
-	Username                 string `json:"username" env_var:"AUTH_USERNAME"`
-	Password                 string `json:"password" env_var:"AUTH_PASSWORD"`
-	PublishResultsToPlatform bool   `json:"publish_to_platform" env_var:"PUBLISH_RESULTS_TO_PLATFORM"`
-	SyncIntervalInSeconds    int    `json:"sync_interval" env_var:"SYNC_INTERVAL"`
+	Debug                    bool                      `json:"debug" env_var:"DEBUG"`
+	FogBroker                mqtt.FogBrokerConfig      `json:"fog_broker" env_var:"FOG_BROKER"`
+	PlatformBroker           mqtt.PlatformBrokerConfig `json:"platform_broker" env_var:"PLATFORM_BROKER"`
+	DataDir                  string                    `json:"data_dir" env_var:"DATA_DIR"`
+	MgwCertManagerUrl        string                    `json:"mgw_cert_manager_url" env_var:"MGW_CERT_MANAGER_URL"`
+	PublishResultsToPlatform bool                      `json:"publish_to_platform" env_var:"PUBLISH_RESULTS_TO_PLATFORM"`
+	SyncIntervalInSeconds    int                       `json:"sync_interval" env_var:"SYNC_INTERVAL"`
+	KeyCloakConfig           KeyCloakConfig            `json:"keycloak" env_var:"KEYCLOAK"`
+}
+
+type KeyCloakConfig struct {
+	Url          string `json:"url" env_var:"KEYCLOAK_URL"`
+	ClientID     string `json:"client_id" env_var:"CLIENT_ID"`
+	ClientSecret string `json:"client_secret" env_var:"KEYCLOAK_CLIENT_SECRET"`
+	Realm        string `json:"realm" env_var:"KEYCLOAK_REALM"`
+	Username     string `json:"username" env_var:"KEYCLOAK_USERNAME"`
+	Password     string `json:"password" env_var:"KEYCLOAK_PASSWORD"`
 }
 
 func New(path string) (*Config, error) {

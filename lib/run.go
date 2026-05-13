@@ -96,14 +96,14 @@ func Run(
 	if err != nil {
 		return err
 	}
-	if config.Username == "" {
+	if *config.PlatformBroker.Username == "" {
 		//may be configured without credentials, if a proxy broker is used
 		err = platformMqttClient.ConnectMQTTBroker(nil, nil)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = platformMqttClient.ConnectMQTTBroker(&config.Username, &config.Password)
+		err = platformMqttClient.ConnectMQTTBroker(config.PlatformBroker.Username, config.PlatformBroker.Password)
 		if err != nil {
 			return err
 		}

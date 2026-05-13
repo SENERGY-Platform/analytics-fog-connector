@@ -10,9 +10,11 @@ import (
 )
 
 type KeycloakClient struct {
-	Client   *gocloak.GoCloak
-	ClientID string
-	config   *config.Config
+	Client       *gocloak.GoCloak
+	ClientID     string
+	ClientSecret string
+	Realm        string
+	config       *config.KeyCloakConfig
 }
 
 func (client *KeycloakClient) GetUserID() (string, error) {
@@ -21,12 +23,12 @@ func (client *KeycloakClient) GetUserID() (string, error) {
 
 func (client *KeycloakClient) getUserID(username string, password string) (string, error) {
 	ctx := context.Background()
-	token, err := client.Client.Login(ctx, client.ClientID, "", "master", username, password)
+	token, err := client.Client.Login(ctx, client.ClientID, client.ClientSecret, client.Realm, username, password)
 	if err != nil {
 		logging.Logger.Error(fmt.Sprintf("Cant login user %s: %s", username, err))
 		return "", err
 	}
-	userInfo, err := client.Client.GetUserInfo(ctx, token.AccessToken, "master")
+	userInfo, err := client.Client.GetUserInfo(ctx, token.AccessToken, client.Realm)
 	if err != nil {
 		logging.Logger.Error("Cant get user info from token: " + err.Error())
 		return "", err
