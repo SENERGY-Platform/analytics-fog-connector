@@ -1,6 +1,6 @@
 module github.com/SENERGY-Platform/analytics-fog-connector
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/Nerzal/gocloak/v13 v13.8.0
@@ -8,7 +8,7 @@ require (
 	github.com/SENERGY-Platform/go-service-base/config-hdl v1.2.0
 	github.com/SENERGY-Platform/go-service-base/watchdog v0.4.1
 	github.com/SENERGY-Platform/mgw-cloud-proxy/cert-manager/lib v0.0.2
-	github.com/eclipse/paho.mqtt.golang v1.4.3
+	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/hahahannes/e2e-go-utils v1.2.15
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
@@ -39,7 +39,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20240513124658-fba389f38bae // indirect
@@ -67,10 +67,10 @@ require (
 	go.opentelemetry.io/otel v1.27.0 // indirect
 	go.opentelemetry.io/otel/metric v1.27.0 // indirect
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/net v0.26.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/net v0.54.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240604185151-ef581f913117 // indirect
 	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
